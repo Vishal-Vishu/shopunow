@@ -1,0 +1,196 @@
+# ============================================================================
+# ShopUNow AI Assistant - Complete Requirements
+# ============================================================================
+# 
+# Installation: pip install -r requirements.txt
+#
+# For development: pip install -r requirements.txt --upgrade
+# ============================================================================
+
+# Core Framework
+streamlit==1.31.0
+
+# LangChain & LangGraph (Agentic AI)
+langchain
+langchain-core
+langgraph
+langchain-openai
+langchain-community
+
+# OpenAI
+openai==1.14.0
+
+# Vector Database
+faiss-cpu==1.8.0
+# For GPU support (optional), replace faiss-cpu with:
+# faiss-gpu==1.8.0
+
+# Document Processing & Text Handling
+tiktoken==0.6.0
+
+# Data Processing
+numpy==1.26.4
+pandas==2.2.1
+
+# API Framework (for FastAPI deployment - Advanced Option 4)
+fastapi==0.110.0
+uvicorn[standard]==0.27.1
+python-multipart==0.0.9
+
+# HTTP Requests
+httpx==0.27.0
+requests==2.31.0
+
+# Pydantic (Data Validation)
+pydantic==2.6.3
+pydantic-settings==2.2.1
+
+# JSON & Data Serialization
+jsonschema==4.21.1
+
+# Environment Variables
+python-dotenv==1.0.1
+
+# Typing Extensions
+typing-extensions==4.10.0
+
+# Date & Time
+python-dateutil==2.9.0
+
+# SQL Support (if using SQL vector stores)
+sqlalchemy==2.0.28
+
+# Embeddings & NLP
+sentence-transformers==2.5.1
+
+# Async Support
+aiohttp==3.9.3
+aiosignal==1.3.1
+
+# Memory Management
+pympler==1.0.1
+
+# Logging & Monitoring
+colorlog==6.8.2
+
+# Testing (Optional - for development)
+pytest==8.0.2
+pytest-asyncio==0.23.5
+
+# Code Quality (Optional - for development)
+black==24.2.0
+flake8==7.0.0
+mypy==1.8.0
+
+# Progress Bars
+tqdm==4.66.2
+
+# YAML Support
+pyyaml==6.0.1
+
+# Character Encoding
+chardet==5.2.0
+
+# Regex
+regex==2023.12.25
+
+# Tenacity (Retry Logic)
+tenacity==8.2.3
+
+# Marshmallow (Serialization)
+marshmallow==3.21.1
+
+# ============================================================================
+# Platform-Specific Notes
+# ============================================================================
+#
+# Windows Users:
+# - If faiss-cpu installation fails, try: conda install -c conda-forge faiss-cpu
+#
+# Mac M1/M2 Users:
+# - Use: pip install --upgrade --no-cache-dir faiss-cpu
+#
+# Linux Users:
+# - Should install without issues
+#
+# GPU Support (Optional):
+# - Replace faiss-cpu with faiss-gpu if you have CUDA-enabled GPU
+# - Requires CUDA toolkit installed
+#
+# ============================================================================
+
+# ============================================================================
+# Version Compatibility Notes
+# ============================================================================
+#
+# Python Version: 3.8 - 3.11 (3.12 may have compatibility issues with some packages)
+#
+# These versions are tested and confirmed working together.
+# If you encounter version conflicts, try these combinations:
+#
+# Combination 1 (Stable - Recommended):
+# langchain==0.1.13
+# langgraph==0.0.62
+# openai==1.14.0
+# streamlit==1.31.0
+#
+# Combination 2 (Latest - Experimental):
+# langchain>=0.1.0
+# langgraph>=0.0.60
+# openai>=1.0.0
+# streamlit>=1.30.0
+#
+# ============================================================================
+
+# ============================================================================
+# Optional Dependencies for Enhanced Features
+# ============================================================================
+
+# Email Support (for Advanced Option 2 - Escalation Emails)
+# Uncomment if you want to enable email notifications:
+# smtplib is built-in to Python, no installation needed
+# email-validator==2.1.0
+
+# WhatsApp Integration (Optional for Advanced Option 2)
+# Uncomment if implementing WhatsApp notifications:
+# twilio==9.0.0
+
+# Redis (for distributed memory - multi-server deployment)
+# Uncomment if deploying across multiple servers:
+# redis==5.0.2
+# redis-om==0.2.1
+
+# PostgreSQL (for persistent storage instead of in-memory)
+# Uncomment if using PostgreSQL for conversation history:
+# psycopg2-binary==2.9.9
+
+# MongoDB (alternative to PostgreSQL)
+# Uncomment if using MongoDB:
+# pymongo==4.6.2
+
+# Prometheus Monitoring
+# Uncomment for production monitoring:
+# prometheus-client==0.20.0
+
+# JWT Authentication (for multi-user API deployment)
+# Uncomment if implementing user authentication:
+# pyjwt==2.8.0
+# python-jose[cryptography]==3.3.0
+
+# ============================================================================
+# Cloud Deployment Dependencies
+# ============================================================================
+
+# For Heroku Deployment:
+# gunicorn==21.2.0
+
+# For AWS Lambda:
+# mangum==0.17.0
+
+# For Google Cloud Run:
+# Already included in base requirements
+
+# For Azure:
+# azure-functions==1.18.0
+
+# ============================================================================

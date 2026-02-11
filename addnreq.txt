@@ -1,0 +1,8 @@
+
+!pip install langchain==0.3.20
+!pip install langchain-openai==0.3.9
+!pip install langchain-community==0.3.20
+!pip install langgraph==0.3.18
+!pip install langchain-tavily==0.1.5
+!pip install fastapi
+!pip install faiss-cpu
