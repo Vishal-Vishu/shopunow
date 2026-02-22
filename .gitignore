@@ -1,0 +1,5 @@
+.env
+__pycache__
+.shopunow
+.langgraph_api
+conversation_memory.json

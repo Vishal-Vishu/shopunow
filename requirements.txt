@@ -1,0 +1,43 @@
+# ===== Core LLM Stack =====
+langchain>=0.2.14
+langchain-core>=1.2.10
+langchain-openai>=0.1.22
+langchain-pinecone>=0.1.3
+langgraph>=0.2.16
+langchain-community
+langchain_core.memory
+langsmith==0.1.147
+arize-phoenix
+openinference-instrumentation-langchain
+openinference-instrumentation-openai
+opentelemetry-exporter-otlp
+
+# ===== OpenAI =====
+openai>=1.40.0
+tiktoken>=0.7.0
+
+# ===== Vector Database =====
+pinecone-client>=3.2.2
+
+# ===== Web UI =====
+streamlit>=1.36.0
+
+# ===== API Deployment =====
+fastapi>=0.112.0
+uvicorn[standard]>=0.30.3
+python-multipart>=0.0.9
+
+# ===== Multimodal Processing =====
+pillow>=10.4.0
+pytesseract>=0.3.10
+pdfplumber>=0.11.4
+python-docx>=1.1.2
+unstructured>=0.14.10
+
+# ===== Environment & Utilities =====
+python-dotenv>=1.0.1
+pydantic>=2.8.2
+typing-extensions>=4.12.2
+
+
+rank_bm25

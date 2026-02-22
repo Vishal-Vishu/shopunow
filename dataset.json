@@ -1,0 +1,1602 @@
+[
+    {
+        "doc": "Q: How do I apply for paid time off (PTO)?\nA: You can apply for PTO through the ShopUNow Employee Portal under the 'Leave Management' section.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: When is the monthly payroll processed?\nA: Payroll is processed on the last working day of each month.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: How can I access my payslips?\nA: Payslips are available in the HR portal under the 'My Finance' tab for the last 24 months.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: What is the process for internal job transfers?\nA: Employees interested in internal roles should apply via the 'Careers' page and notify their current supervisor.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: Who do I contact for updating my bank account or personal details?\nA: Please update your details directly in the 'Profile' section of the HR portal to ensure payroll accuracy.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: What is the company's policy on employee discounts?\nA: All staff receive a 20% discount on clothing, DIY, books, and toys after completing their 3-month probation.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: How do I report a workplace safety hazard in the retail store?\nA: Report any hazards immediately to your Floor Manager and log the incident in the Safety Hub app.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: Is there a formal dress code for corporate office staff?\nA: The corporate office follows a business-casual dress code, while retail staff must wear provided ShopUNow vests.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: What should I do if I am unable to come to work due to illness?\nA: Notify your direct supervisor via phone or message at least one hour before your shift begins.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: Are performance reviews mandatory?\nA: Yes, ShopUNow conducts annual performance reviews every January to discuss growth and compensation.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: Does ShopUNow offer tuition reimbursement for DIY or retail certifications?\nA: Yes, HR provides a partial reimbursement program for approved courses related to your current career path.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: How can I request a duplicate of my T4 or tax statement?\nA: Tax statements are archived and downloadable from the 'Documents' section of the HR portal.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: What is the policy for bereavement leave?\nA: Employees are entitled to up to 3 days of paid leave for the loss of an immediate family member.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: Can I opt-out of the company health insurance plan?\nA: Yes, you can opt-out during the annual open enrollment period if you provide proof of alternative coverage.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: How do I submit a formal grievance regarding a workplace issue?\nA: Formal grievances should be submitted in writing to your HR Business Partner using the official 'Employee Concerns' form.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: What is the probation period for new hires?\nA: The standard probation period is three months, during which performance is closely monitored.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: Can I carry over unused vacation days to next year?\nA: You can carry over up to 5 days, which must be used by March 31st of the following year.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: How do I refer a friend for a job opening?\nA: Submit your referral through the 'Refer-A-Friend' link on the intranet to be eligible for a bonus.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: What is the policy on overtime pay for retail staff?\nA: Overtime is paid at 1.5x the hourly rate for any hours worked beyond 40 hours per week.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: Does ShopUNow offer a retirement savings plan?\nA: Yes, we offer a 401(k) matching program up to 4% of your annual salary after one year of service.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: How do I request a change in my shift schedule?\nA: Shift swap requests must be submitted to the Store Manager 48 hours in advance for approval.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: What is the procedure for reporting workplace harassment?\nA: Report the incident to HR or use the anonymous 'Ethics Hotline' available 24/7.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: Are there opportunities for cross-training between departments?\nA: Yes, employees can apply for 'Skills-Swap' days to learn about the DIY or Books sections.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: How is my bonus calculated?\nA: Bonuses are calculated based on a combination of store sales targets and individual performance metrics.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: What benefits are included in the standard health package?\nA: Our package includes medical, dental, vision, and basic life insurance coverage.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: Can I work from home if I am in a corporate role?\nA: Corporate roles follow a hybrid model allowing for up to 2 days of remote work per week.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: How do I reset my HR Portal password?\nA: Click 'Forgot Password' on the login screen or contact IT Support at ext. 555.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: What is the policy on jury duty?\nA: ShopUNow provides paid leave for jury duty upon presentation of an official court summons.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: Are there any discounts for gym memberships?\nA: Yes, check the 'Employee Perks' tab on the intranet for a list of partner fitness centers.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: How do I apply for maternity leave?\nA: Please notify HR at least 15 weeks before your expected due date to begin the paperwork.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: What happens to my benefits if I resign?\nA: Medical coverage typically ends on the last day of the month of your resignation; COBRA details will be mailed.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: Can I use my employee discount for family members?\nA: The discount is for personal use only, though specific 'Family Discount Days' are held twice a year.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: How do I get a replacement for a damaged uniform?\nA: Bring your damaged uniform to the HR office to exchange it for a new one at no cost.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: Is there a policy on social media use?\nA: Yes, employees should not share confidential company info or represent themselves as official spokespeople.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: What is the 'Employee of the Month' reward?\nA: Winners receive a $100 gift card and a dedicated parking spot for the following month.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: How do I sign up for the company newsletter?\nA: All employees are automatically subscribed via their work email addresses.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: Does ShopUNow provide safety training for the DIY power tools section?\nA: Yes, mandatory safety certification is required before any staff can work in the DIY department.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: What is the process for a name change in company records?\nA: Provide HR with a copy of your updated Social Security card or legal marriage certificate.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: Are part-time employees eligible for dental insurance?\nA: Dental insurance is available to part-time staff who work a minimum of 20 hours per week.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: How long do I have to wait to re-apply if I leave the company?\nA: Former employees in good standing are eligible for re-hire after a six-month period.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: What is the smoking policy on company premises?\nA: Smoking and vaping are only permitted in designated outdoor areas at the rear of the building.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: Can I view my personnel file?\nA: Yes, you can request an appointment with HR to view your file in a supervised setting.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: How is 'length of service' calculated for anniversary awards?\nA: Service is calculated based on your original start date, minus any significant breaks in employment.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: What is the policy for severe weather closures?\nA: If the store closes due to weather, updates will be posted on the emergency hotline and staff WhatsApp groups.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: Do we get paid for public holidays?\nA: Full-time employees receive holiday pay; if you work the holiday, you receive 'time and a half'.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: How do I apply for a short-term disability claim?\nA: Contact our benefits provider, SunLife, directly to initiate a claim and inform HR once filed.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: Is there a designated breakroom for warehouse staff?\nA: Yes, the warehouse breakroom is located on the mezzanine level and includes a kitchen and lockers.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: What is the protocol for a workplace injury?\nA: Seek first aid immediately, notify your supervisor, and complete an Incident Report within 24 hours.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: Are there any restrictions on secondary employment?\nA: You may have a second job as long as it does not conflict with your ShopUNow schedule or pose a conflict of interest.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: How do I volunteer for the ShopUNow Community Outreach team?\nA: Sign-up sheets for monthly community events are posted on the HR notice board.",
+        "category": "HR"
+    },
+    {
+        "doc": "Q: How do I book a conference room for a team meeting?\nA: Use the 'Room Booker' app on the intranet or the tablet located outside each meeting room.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: The air conditioning in the clothing section is too cold. Who do I notify?\nA: Please log a maintenance request on the Facilities Portal or call the building supervisor at ext. 202.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: How do I order more stationery for the admin office?\nA: Complete the 'Supplies Request Form' by Wednesday each week to be included in the Friday delivery.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: What is the procedure for reporting a broken light fixture in the warehouse?\nA: Mark the area with a safety cone and submit a 'General Repair' ticket on the Facilities dashboard.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: I have a visitor coming tomorrow. How do I register them?\nA: Email the front desk at reception@shopunow.com with the visitor's name and expected arrival time.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: Where can I find the key for the staff bike storage?\nA: Digital access is linked to your staff ID card. If your card isn't working, visit the Security Office.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: How do I request a standing desk for my workstation?\nA: Standing desk requests require an ergonomic assessment. Contact Admin to schedule an appointment.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: What is the policy for using the company car for events?\nA: You must provide a valid driver's license and sign out the vehicle logbook at the Admin desk 24h in advance.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: Who do I contact if the staff kitchen runs out of coffee?\nA: The Facilities team restocks the kitchen daily at 9 AM. For urgent refills, notify the floor runner.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: How do I dispose of confidential paper documents?\nA: Use the locked 'Blue Shredding Bins' located in the printing rooms; do not use regular recycling.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: Where is the designated assembly point for fire drills?\nA: The assembly point is in the North Parking Lot, specifically near the 'Area A' signage.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: Can I receive personal mail at the office?\nA: ShopUNow discourages personal mail. If necessary, please ensure it is addressed to 'Your Name - PERSONAL'.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: How do I request a deep clean for my department area?\nA: Deep cleans for the retail floors are scheduled monthly; for special requests, email facilities@shopunow.com.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: There is a water leak in the DIY section restroom.\nA: Contact the Facilities Emergency Line immediately at ext. 999 for an urgent plumber dispatch.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: How do I get a new nameplate for my desk?\nA: Nameplates are ordered through the 'Office Admin' portal during the first week of every month.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: Are there lockers available for part-time retail staff?\nA: Yes, lockers are available in the Staff Room on a first-come, first-served basis for your shift.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: Who is responsible for the maintenance of the staff microwave?\nA: Employees are expected to clean up spills immediately. Facilities performs a deep clean every Friday night.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: How do I report a pest issue in the warehouse?\nA: Submit an 'Urgent Health & Safety' ticket. Our pest control partner visits every Tuesday morning.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: What should I do if I find a lost item in the store?\nA: Bring all lost property to the Customer Service Desk and fill out a 'Lost & Found' log entry.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: Can I book the boardroom for a full-day workshop?\nA: Yes, but boardroom bookings longer than 4 hours require approval from the Operations Manager.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: How do I request a repair for a squeaky stockroom door?\nA: Log a ticket under 'General Carpentry' in the Facilities maintenance portal.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: Is there a first aid room in the building?\nA: Yes, the First Aid room is located on the Ground Floor next to the Staff Entrance.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: How do I get a permit for the company parking garage?\nA: Submit your vehicle registration details to Admin; permits are issued based on seniority and distance.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: Can I move the furniture in my office myself?\nA: No, please log a 'Furniture Move' request. Facilities must ensure that exits and fire paths remain clear.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: Where can I find a map of the warehouse layout?\nA: Layout maps are posted near every fire extinguisher and available on the Facilities intranet page.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: How do I request extra chairs for a presentation?\nA: Submit an 'Event Support' request at least 48 hours before the event to ensure chairs are moved.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: The automatic front doors are making a grinding noise.\nA: Please notify Security immediately. They will switch the doors to manual mode and call the technician.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: Who do I ask for a physical copy of the Building Safety Manual?\nA: Physical copies are kept at the Security Desk and the HR office for reference.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: How do I ship an international package for work?\nA: Bring the packed items to the Mailroom with a completed 'International Shipping' form and cost center code.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: Can I use the office fridge to store frozen DIY supplies?\nA: No, office fridges are for food only. Flammable or chemical supplies must be stored in the DIY hazmat locker.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: What is the procedure for an elevator breakdown?\nA: Use the emergency phone inside the elevator. If you are outside, call the lift service number on the plaque.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: How do I order a new company ID badge?\nA: Fill out the 'ID Request' form on the Admin portal; new badges are printed every Tuesday and Thursday.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: Is there a quiet room for nursing mothers?\nA: Yes, the 'Wellness Suite' on the 3rd floor is available; it is a private, lockable space with a fridge.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: How do I request more recycling bins for the toy department?\nA: Email facilities@shopunow.com with your location and the number of bins required.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: Who handles the landscape maintenance for the storefront?\nA: Facilities manages the landscaping contract; gardeners visit every Monday and Thursday morning.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: I lost my office key. What is the fine?\nA: A replacement key costs $25, which will be deducted from your next paycheck once you sign the replacement form.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: How do I check if a specific book is in the staff library?\nA: The staff library catalog is available on the 'Employee Growth' section of the intranet.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: The carpet in the lobby is stained. When will it be cleaned?\nA: Spot cleaning is done nightly; a full steam clean is scheduled for the first Sunday of every quarter.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: How do I get a barcode for my personal laptop to bring it on-site?\nA: Visit Security to have your device registered and a 'Personal Device' sticker applied.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: What are the hours for the staff canteen?\nA: The canteen is open for breakfast from 7:30\u00e2\u20ac\u201c9:30 AM and lunch from 11:30 AM\u00e2\u20ac\u201c2:00 PM.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: How do I request a courier for an urgent same-day delivery?\nA: Call the Mailroom at ext. 305 before 11:00 AM to schedule a same-day local courier.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: Can I use the DIY demo area for a personal project after hours?\nA: No, the demo area is for customer workshops and staff training only due to insurance restrictions.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: Where is the master list of all internal phone extensions?\nA: The 'Employee Directory' on the intranet allows you to search by name, department, or extension.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: How do I report a broken chair in the breakroom?\nA: Place a 'Do Not Use' sign on it and notify Facilities via the maintenance portal.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: Are we allowed to decorate our desks for holidays?\nA: Yes, provided the decorations are not a fire hazard (no candles/plug-in lights) and don't block visibility.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: Who do I contact for a building access audit for my team?\nA: Email the Facilities Manager to request a report of all card-swipes for your department's secure zones.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: How do I request a refill for the first aid kits in the DIY aisle?\nA: Notify the Floor Safety Officer who will coordinate with Admin to replenish supplies.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: Is there a place to shower if I bike to work?\nA: Yes, showers are located in the basement level changing rooms next to the bike storage.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: How do I update my desk location in the seating chart?\nA: Log into the 'Workspace' app and drag your icon to your new desk to keep the directory accurate.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: What is the policy for using office printers for personal documents?\nA: Limited personal printing (under 5 pages) is allowed, but high-volume printing is prohibited.",
+        "category": "Admin"
+    },
+    {
+        "doc": "Q: What payment methods does ShopUNow accept?\nA: We accept all major credit/debit cards (Visa, Mastercard, Amex), PayPal, Apple Pay, and Google Pay.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Why was my credit card declined?\nA: This can occur due to incorrect billing details, expired cards, or bank security blocks. Please verify your info or contact your bank.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: How long does a refund take to show up in my account?\nA: Once processed, refunds typically appear in your account within 5-7 business days, depending on your financial institution.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Can I pay for my DIY equipment in installments?\nA: Yes, ShopUNow offers interest-free financing through Klarna and Afterpay for purchases over $150.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Where can I download the VAT invoice for my business purchase?\nA: You can download your invoice from the 'Order History' section in your account dashboard immediately after purchase.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Does ShopUNow offer a price-match guarantee?\nA: Yes, if you find a lower price on an identical DIY tool or toy at a local competitor, we will match it at the time of purchase.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Can I use multiple discount codes on one order?\nA: Only one promotional code can be applied per transaction, though these can often be combined with gift card balances.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: How do I check the balance of my ShopUNow gift card?\nA: Enter your gift card number and PIN in the 'Gift Cards' section of our website footer to view your remaining balance.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: I was charged twice for my order. What should I do?\nA: Please contact our support team with your order number; often one charge is a temporary 'authorization hold' that will drop off.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Do you offer tax-exempt purchasing for non-profit organizations?\nA: Yes. Please email your tax-exempt certificate to billing@shopunow.com before placing your order to set up an exempt account.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Is my payment information secure on your site?\nA: Absolutely. We use industry-standard SSL encryption and are fully PCI-DSS compliant to ensure your data is protected.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Can I change my billing address after the order is placed?\nA: For security reasons, billing addresses cannot be changed once an order is submitted. Please cancel and re-order if necessary.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Why is there a small $1 charge on my statement?\nA: This is a temporary pre-authorization charge used to verify your card's validity and will be removed automatically within 48 hours.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Do you accept personal checks for DIY bulk orders?\nA: We do not accept personal checks, but we do accept bank transfers for large-scale DIY or contractor orders.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: How do I apply a store credit to my current checkout?\nA: During the payment step, select 'Apply Store Credit' from your available wallet options before entering a secondary payment method.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: What happens if a refund is sent to a closed credit card?\nA: Most banks will automatically route the funds to your new card or issue a check. Contact your bank if the funds don't appear after 10 days.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Can I get a refund on a digital gift card?\nA: Digital gift cards are non-refundable once the code has been generated and sent to the recipient.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Does the price include customs duties for international clothing orders?\nA: For most regions, duties are calculated at checkout. If not, you may be responsible for local import taxes upon delivery.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: How do I update my saved payment method?\nA: Log in to your account, go to 'Account Settings,' and select 'Payment Methods' to add, remove, or edit your cards.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Do you offer a student discount?\nA: Yes, students can verify their status via UNiDAYS to receive a 10% discount on clothing and books.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: My coupon code isn't working on DIY power tools.\nA: Some brands are excluded from general promotions due to manufacturer pricing policies. Check the 'Terms & Conditions' of the code.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Can I pay over the phone?\nA: To protect your security, we do not take credit card information over the phone. All payments must be made via our secure online portal.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Do you offer corporate accounts for libraries or schools buying books?\nA: Yes, we offer 'Pro Accounts' with Net-30 invoicing terms for qualifying educational and corporate institutions.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Is there a fee for using PayPal?\nA: No, ShopUNow does not charge any additional transaction fees for using PayPal as your payment method.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: I forgot to add my discount code. Can you apply it retroactively?\nA: If the order hasn't shipped, contact us and we can apply the credit; otherwise, we can issue a price adjustment as store credit.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Why does the price change when I select a different clothing size?\nA: Occasionally, plus-size or specialized items have different manufacturing costs which may reflect a slight price variation.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: How do I receive a refund if I no longer have my original receipt?\nA: If you used a ShopUNow Rewards account, we can look up your receipt. Otherwise, we can only offer store credit at the current sale price.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Does ShopUNow save my CVV number?\nA: No, we never store your CVV. It must be entered for every transaction to ensure maximum security.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Can I use a foreign credit card for a US delivery?\nA: Yes, as long as the card is a major international brand like Visa or Mastercard, though your bank may charge a conversion fee.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: What currency will I be charged in?\nA: You will be charged in the currency displayed at checkout, which is typically based on your geolocation.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Are there any hidden fees for DIY assembly services?\nA: No, all assembly fees are quoted upfront at checkout. There are no additional 'on-the-day' fees unless parts are missing.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: My payment was successful but I didn't get a confirmation email.\nA: Please check your spam folder. If it's not there, verify your email address in your account settings or contact support.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Can I pay with a ShopUNow gift card and a credit card together?\nA: Yes, the system will apply the gift card balance first, and the remaining amount can be covered by your credit card.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: How do I claim a tax refund if I am an international visitor?\nA: We can provide a stamped 'Tax-Free Shopping' form at any physical store location with a valid foreign passport.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Why is my billing address different from my shipping address?\nA: This is common (e.g., for gifts). However, your billing address must match the address on file with your bank to avoid declines.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Do you offer bulk buy discounts for toys?\nA: For orders of 20+ of the same toy (e.g., for events), please contact our 'Bulk Sales' team for a custom quote.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: How can I see a breakdown of the sales tax on my order?\nA: A full breakdown of local and state taxes is provided on the final 'Review Order' page and on your digital receipt.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Can I set up 'One-Click' purchasing?\nA: Yes, you can enable this in your account settings once you have saved a default shipping address and payment method.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Does ShopUNow accept Bitcoin or cryptocurrency?\nA: Currently, we do not accept cryptocurrency. We are constantly evaluating new payment technologies for the future.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: What is the 'ShopUNow Credit' in my account?\nA: This is credit issued from returns or promotions that can be used like cash on any future ShopUNow purchase.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Why was I charged sales tax on a book order?\nA: Sales tax laws vary by state. Many states require sales tax on all physical goods, including books.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Can I use a pre-paid Visa/Mastercard gift card?\nA: Yes, but ensure the card is registered with a billing address, or the transaction may be declined by the processor.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: How do I remove a card from my account?\nA: In 'Payment Methods,' click the 'X' or 'Remove' button next to the card you wish to delete.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Do you offer 'Pay on Delivery'?\nA: No, all orders must be paid in full at the time of checkout on our website.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Can I change my Klarna payment date?\nA: All adjustments to installment plans must be handled directly through the Klarna app or website.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: How do I apply for a ShopUNow Store Credit Card?\nA: You can apply via the 'Financial Services' link on our site. Approval offers a 5% discount on all future DIY and Clothing orders.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Why is my refund amount lower than the original price?\nA: This usually happens if a restocking fee was applied or if original shipping costs were non-refundable.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Is there a maximum limit for a single transaction?\nA: Online transactions are limited to $10,000. For larger contractor DIY purchases, please contact our Sales Desk.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Can I pay with two different credit cards?\nA: Currently, our system only allows one credit card per order, though you can combine a gift card with a credit card.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: Who do I contact for a billing error on my subscription?\nA: Please email subscriptions@shopunow.com with your account ID for any recurring billing issues.",
+        "category": "Billing"
+    },
+    {
+        "doc": "Q: How can I track my ShopUNow order?\nA: Once shipped, you will receive an email with a tracking number. You can also track it in the 'My Orders' section of our site.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: How long does standard shipping take?\nA: Standard shipping typically takes 3-5 business days for clothing and toys, and 5-7 days for larger DIY items.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Do you offer same-day delivery?\nA: Same-day delivery is available in select zip codes for orders placed before 11:00 AM on eligible clothing and toy items.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: My DIY power tool arrived damaged. What should I do?\nA: Please take photos of the damage and contact us within 48 hours. We will arrange a free replacement and pickup of the damaged unit.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Can I change my shipping address after the order is shipped?\nA: Once an order has left our warehouse, we cannot change the address. You may be able to redirect it via the carrier's app.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Do you ship books and clothing internationally?\nA: Yes, we ship to over 50 countries. Shipping rates and delivery times vary based on the destination.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: What happens if I am not home to receive a large DIY delivery?\nA: Larger items require a signature. The carrier will contact you to schedule a delivery window; if missed, they will attempt redelivery the next day.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Is there a way to get free shipping?\nA: ShopUNow offers free standard shipping on all orders over $50. ShopUNow Rewards members get free shipping on all orders.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Why is my order being shipped in multiple packages?\nA: To get your items to you faster, we may ship items from different warehouses if they are not all in stock at one location.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: My tracking says 'Delivered' but I don't see my package.\nA: Please check with neighbors or your building manager first. If not found within 24 hours, contact us to start a trace with the carrier.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Do you ship to P.O. Boxes?\nA: We can ship books and clothing to P.O. Boxes, but large DIY tools and toys must be shipped to a physical street address.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: What is 'White Glove' delivery for DIY furniture?\nA: This service includes delivery to your room of choice, unpacking, and removal of all packaging materials.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Can I pick up my online order at a ShopUNow store?\nA: Yes, select 'In-Store Pickup' at checkout. Most items are ready within 2 hours if they are in stock at your local branch.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: How much does it cost to ship a heavy DIY workbench?\nA: Heavy items are subject to a 'Large Item Surcharge' which is calculated based on weight and your distance from our warehouse.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Are your book shipments eco-friendly?\nA: Yes, we use 100% recyclable cardboard packaging and minimize plastic filler in all our book and clothing shipments.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Do you offer 'Ship to Store' for items not in stock locally?\nA: Yes, you can have any item shipped to your local store for free pickup, typically arriving within 3-5 business days.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: What carriers do you use?\nA: We partner with UPS, FedEx, and USPS for standard items, and specialized freight carriers for bulk DIY supplies.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Can I schedule a specific time for my delivery?\nA: For standard parcels, no. For freight/large DIY deliveries, the carrier will provide a 4-hour window for your convenience.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Is the packaging discreet?\nA: Clothing and books ship in standard branded bags/boxes. High-value DIY tools ship in plain brown boxes to prevent theft.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Do you ship to APO/FPO addresses?\nA: Yes, we proudly ship to our military members via USPS, though delivery times may be longer.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: What should I do if my toy order is missing an item?\nA: Check your packing slip to see if it's arriving in a separate shipment. If not, contact support for a missing item claim.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Can I request 'No Signature Required' for my delivery?\nA: You can specify this in the order notes, but it is ultimately at the carrier's discretion based on the safety of the area.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: How do I return an item I bought online?\nA: You can return items at any ShopUNow store or print a pre-paid return label from our Online Return Portal.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Why is my DIY wood flooring taking so long to ship?\nA: Natural materials sometimes require specialized climate-controlled transport or are shipped directly from the mill.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Do you offer express shipping on weekends?\nA: Orders placed on Friday after 2 PM will ship Monday. We do not currently offer Sunday delivery for standard shipping.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Can I track my 'In-Store Pickup' order?\nA: You will receive a 'Ready for Pickup' email. You can also check the status 'Processing' or 'Ready' in your account.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Does ShopUNow ship to Alaska and Hawaii?\nA: Yes, though these locations are excluded from free shipping promotions and take slightly longer to arrive.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: How do I report a stolen package?\nA: First, file a police report for the theft, then contact our support team with the report number so we can assist with a claim.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Can I consolidate multiple orders into one shipment?\nA: Once an order is placed, we cannot manually group it with another, but our system tries to do this automatically if possible.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: What is the 'Shipping Protection' at checkout?\nA: This is an optional low-cost insurance that guarantees an immediate replacement if your order is lost, damaged, or stolen.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Do you provide a gift-wrapping service for toys?\nA: Yes, for a small fee, we can gift-wrap toys and books and include a personalized printed message.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Why is my international tracking not updating?\nA: International packages often stop updating once they leave the origin country and resume once they clear customs in your country.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Can I use my own FedEx account for shipping?\nA: Currently, we only use ShopUNow's preferred carrier accounts to manage the logistics and tracking integration.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Is there a weight limit for residential deliveries?\nA: Individual boxes over 150 lbs must be shipped via freight and delivered to the curbside.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: How do I know if an item is 'Hazmat' for shipping?\nA: Items like DIY spray paints or lithium batteries will have a 'Hazmat' label on the product page and require ground shipping.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Can I cancel an order if it hasn't shipped yet?\nA: You have a 30-minute window after placing an order to cancel it. After that, it is sent to the warehouse for fulfillment.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Do you ship on holidays?\nA: Our warehouses and carriers are closed on major holidays, which may delay your shipment by 24-48 hours.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: How are fragile book box sets protected?\nA: We use reinforced corner protectors and bubble wrap to ensure collectible book sets arrive in pristine condition.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Can I change my pickup person for an 'In-Store Pickup' order?\nA: Yes, you can add an 'Alternate Pickup Person' in the order confirmation screen or by calling the store.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: What is 'Curbside Delivery' for DIY lumber?\nA: The driver will drop the pallet at the end of your driveway or the curb. They cannot bring the items inside the house.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Do you ship to freight forwarders?\nA: Yes, but ShopUNow's responsibility ends once the package is delivered to the forwarder's US address.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: How do I get a return shipping label for a heavy toy?\nA: Large toys may require a specialized return carrier. Contact us to schedule a home pickup for items over 50 lbs.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Why does my tracking say 'Label Created' for 2 days?\nA: This means the order is packed and waiting for the carrier's daily pickup. It will update once scanned by the driver.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Is my delivery carbon-neutral?\nA: ShopUNow offers a 'Carbon-Neutral' checkout option where you can pay a few cents to offset the emissions of your delivery.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Can I redirect a clothing order to a UPS Access Point?\nA: Yes, once you have the tracking number, you can use the UPS My Choice app to redirect it to a nearby locker or store.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Do you ship DIY chemicals (like paint thinner) to California?\nA: Some chemicals are restricted by state law. If an item cannot ship to your zip code, you will be notified at checkout.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: What should I do if my package is stuck in customs?\nA: Customs delays are outside our control. However, if they require more info, contact us and we will provide the necessary paperwork.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Do you offer Saturday delivery for DIY supplies?\nA: Saturday delivery is available for standard parcels but generally not for freight/LTL shipments.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: How long do I have to pick up my 'In-Store' order?\nA: We will hold your order for 7 days. If not picked up, the items will be returned to stock and a refund issued.",
+        "category": "Shipping"
+    },
+    {
+        "doc": "Q: Can I get a shipping refund if my order is late?\nA: If you paid for expedited shipping and it arrives late due to a carrier error, we will refund your shipping costs.",
+        "category": "Shipping"
+    },
+        {
+        "doc": "Q: How do I reset my Windows login password?\nA: Visit the 'Password Reset Portal' on your mobile device or contact the helpdesk at ext. 101 for a temporary token.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: The Point of Sale (POS) terminal is frozen. What should I do?\nA: Perform a hard restart by holding the power button for 10 seconds. If it persists, call the Retail Tech line immediately.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: How do I connect to the 'ShopUNow_Staff' Wi-Fi?\nA: Use your employee ID as the username and your portal password. Ensure your device's MAC address is registered.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: I accidentally deleted a folder on the shared 'S:' drive. Can it be recovered?\nA: Yes, IT can restore files from the nightly backup. Please submit a ticket with the folder name and deletion time.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: My work email is not syncing on my personal phone.\nA: Ensure you have the 'Company Portal' app installed and that your device complies with our mobile security policy.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: How do I request a new software license for the DIY design tool?\nA: Submit a request through the 'Service Now' portal under 'Software Procurement' with your manager's approval.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: What should I do if I receive a suspicious email that looks like phishing?\nA: Do not click any links. Use the 'Report Phish' button in Outlook or forward it to security@shopunow.com.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: The receipt printer at my till is not printing. How do I fix it?\nA: Check that the paper roll is seated correctly and the green light is on. Ensure the USB cable is firmly plugged in.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: How can I access the company VPN from home?\nA: Launch the Cisco AnyConnect client and use your MFA app to approve the login.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: My laptop is running extremely slowly. What is the first step?\nA: Open Task Manager (Ctrl+Shift+Esc) to see if any process is using high CPU. If not, try a full system restart.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: How do I set up my multi-factor authentication (MFA)?\nA: Download the Okta Verify app and scan the QR code provided during your first login on a company workstation.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: Can I use a personal USB drive on company computers?\nA: No, for security reasons, all external USB storage devices are blocked unless they are company-encrypted drives.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: How do I request a secondary monitor for my workspace?\nA: Log a 'Hardware Request' ticket. Approval from your department head is required for additional peripherals.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: The store's public announcement (PA) system is not working.\nA: Check the amplifier in the comms room; if the 'Fault' light is red, contact IT Support immediately.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: How do I join a Microsoft Teams meeting in the conference room?\nA: Use the touch panel on the table to 'Join' the scheduled meeting associated with that room's calendar.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: I can't log into the ShopUNow inventory app.\nA: Ensure you are using your LDAP credentials and that you are connected to the secure internal network.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: How do I report a broken barcode scanner?\nA: Take the scanner to the IT cage and fill out the 'Device Exchange' log to receive a refurbished unit.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: Is there a limit to my email inbox size?\nA: Standard inboxes are limited to 50GB. Please archive older emails to the cloud if you reach this limit.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: How do I update the software on my handheld inventory device?\nA: Place the device in the charging cradle overnight; updates are pushed automatically at 3:00 AM.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: What is the process for offboarding a team member's digital access?\nA: Submit an 'Access Revocation' form to IT as soon as the resignation is confirmed to secure company data.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: Can I install personal apps like Spotify on my work laptop?\nA: No, only software available in the 'Company Portal' self-service store is permitted for installation.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: My wireless mouse stopped working. Where can I get batteries?\nA: IT supplies rechargeable batteries for wireless peripherals; please visit the IT helpdesk on the 2nd floor.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: How do I encrypt an email containing sensitive customer data?\nA: Type '[Secure]' in the subject line of your Outlook email to trigger the encryption gateway automatically.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: The store Wi-Fi for customers is down. Who fixes this?\nA: This is managed by an external provider. Please notify IT so we can open a priority ticket with the ISP.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: How do I find my computer's Asset Tag number?\nA: Look for a silver sticker on the bottom of your laptop or the back of your PC tower starting with 'SUN-'.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: I lost my company-issued smartphone. What should I do?\nA: Report it to IT immediately so we can remotely wipe the device and disable the SIM card.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: How do I share a large file that is too big for email?\nA: Upload the file to your ShopUNow OneDrive and share a link with 'Specific People' permissions.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: Why is my Zoom camera showing a black screen?\nA: Ensure the physical privacy shutter on the webcam is open and that 'Integrated Camera' is selected in settings.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: How do I add a shared department mailbox to my Outlook?\nA: Once permissions are granted, go to File > Account Settings > More Settings > Advanced > Add in Outlook.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: The price checker kiosk in the DIY aisle is displaying an error.\nA: Power cycle the kiosk. If error 'E-104' returns, it requires a network configuration update from IT Support.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: How do I request access to the 'Sales-Data' SQL database?\nA: Complete the Data Access Request form and the mandatory 'Data Privacy Training' on the portal.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: My laptop battery isn't holding a charge. Can it be replaced?\nA: Yes, bring your laptop to IT. If battery health is below 80%, we will replace it or issue a loaner.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: Can I use ChatGPT for my daily store reports?\nA: You may only use 'ShopUNow Enterprise AI'; using public AI tools for company data is strictly prohibited.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: How do I print labels for the toy section shelves?\nA: Use the 'Zebra Label' software on the stockroom PC and ensure 'Shelf Edge' label stock is loaded.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: What do I do if my MFA phone is broken and I can't log in?\nA: Call the IT emergency line; after identity verification, we will issue a 24-hour bypass code.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: How do I map a network printer?\nA: Type '\\\\SUN-PRINT-01' in your file explorer and double-click the printer named after your floor or section.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: Is my work-from-home internet reimbursed by the IT department?\nA: IT does not handle reimbursements; please contact Finance to see if you qualify for a remote-work stipend.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: How do I update my Slack profile picture?\nA: Go to Preferences > Profile and ensure your photo meets our professional branding guidelines.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: The inventory scanner won't read barcodes on DIY metal parts.\nA: Adjust the scanner's laser intensity in the 'Settings' menu or use the manual 'Item Lookup' feature.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: How do I request a headset for taking customer service calls?\nA: Submit a 'Voice Peripheral' ticket; headsets are issued to all staff in the call center and support teams.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: I'm getting a 'Certificate Error' on the intranet. How to fix?\nA: Check if your computer's date and time are correct. If they are, contact IT to refresh your security certificates.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: Can I set up a personal hotspot if the office Wi-Fi is slow?\nA: No, personal hotspots interfere with office signals; please report the slow speed to IT for investigation.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: How do I view the company's IT maintenance schedule?\nA: Scheduled outages are posted on the 'IT Status Page' linked on the intranet homepage.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: What is the policy for disposing of old hardware?\nA: All electronics must be given to IT for secure data destruction and environmentally friendly recycling.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: My Excel 'Power Query' is failing to refresh. Why?\nA: Ensure your credentials for the data source haven't expired and that you are connected to the ShopUNow VPN.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: How do I record a voicemail greeting on my desk phone?\nA: Press the 'Voicemail' button, enter your PIN, and follow the voice prompts for 'Personal Options'.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: Does IT provide training on the new ERP system?\nA: Yes, weekly training webinars are held every Tuesday at 10:00 AM; sign up via the L&D portal.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: I forgot my password to the DIY paint-mixing software.\nA: This software is vendor-managed. Please contact the DIY Floor Manager for a password reset.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: How do I suggest an improvement for the ShopUNow mobile app?\nA: Submit your feedback through the 'Digital Innovation' form found on the IT service portal.",
+        "category": "IT"
+    },
+    {
+        "doc": "Q: My screen is flickering. Is the monitor broken?\nA: It might be a loose cable. Reseat the HDMI or DisplayPort cable at both ends before requesting a replacement.",
+        "category": "IT"
+    },
+        {
+        "doc": "Q: How do I book a conference room for a team meeting?\nA: Use the 'Room Booker' app on the intranet or the tablet located outside each meeting room.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: The air conditioning in the clothing section is too cold. Who do I notify?\nA: Please log a maintenance request on the Facilities Portal or call the building supervisor at ext. 202.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: How do I order more stationery for the admin office?\nA: Complete the 'Supplies Request Form' by Wednesday each week to be included in the Friday delivery.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: What is the procedure for reporting a broken light fixture in the warehouse?\nA: Mark the area with a safety cone and submit a 'General Repair' ticket on the Facilities dashboard.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: I have a visitor coming tomorrow. How do I register them?\nA: Email the front desk at reception@shopunow.com with the visitor's name and expected arrival time.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: Where can I find the key for the staff bike storage?\nA: Digital access is linked to your staff ID card. If your card isn't working, visit the Security Office.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: How do I request a standing desk for my workstation?\nA: Standing desk requests require an ergonomic assessment. Contact Admin to schedule an appointment.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: What is the policy for using the company car for events?\nA: You must provide a valid driver's license and sign out the vehicle logbook at the Admin desk 24h in advance.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: Who do I contact if the staff kitchen runs out of coffee?\nA: The Facilities team restocks the kitchen daily at 9 AM. For urgent refills, notify the floor runner.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: How do I dispose of confidential paper documents?\nA: Use the locked 'Blue Shredding Bins' located in the printing rooms; do not use regular recycling.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: Where is the designated assembly point for fire drills?\nA: The assembly point is in the North Parking Lot, specifically near the 'Area A' signage.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: Can I receive personal mail at the office?\nA: ShopUNow discourages personal mail. If necessary, please ensure it is addressed to 'Your Name - PERSONAL'.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: How do I request a deep clean for my department area?\nA: Deep cleans for the retail floors are scheduled monthly; for special requests, email facilities@shopunow.com.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: There is a water leak in the DIY section restroom.\nA: Contact the Facilities Emergency Line immediately at ext. 999 for an urgent plumber dispatch.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: How do I get a new nameplate for my desk?\nA: Nameplates are ordered through the 'Office Admin' portal during the first week of every month.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: Are there lockers available for part-time retail staff?\nA: Yes, lockers are available in the Staff Room on a first-come, first-served basis for your shift.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: Who is responsible for the maintenance of the staff microwave?\nA: Employees are expected to clean up spills immediately. Facilities performs a deep clean every Friday night.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: How do I report a pest issue in the warehouse?\nA: Submit an 'Urgent Health & Safety' ticket. Our pest control partner visits every Tuesday morning.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: What should I do if I find a lost item in the store?\nA: Bring all lost property to the Customer Service Desk and fill out a 'Lost & Found' log entry.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: Can I book the boardroom for a full-day workshop?\nA: Yes, but boardroom bookings longer than 4 hours require approval from the Operations Manager.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: How do I request a repair for a squeaky stockroom door?\nA: Log a ticket under 'General Carpentry' in the Facilities maintenance portal.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: Is there a first aid room in the building?\nA: Yes, the First Aid room is located on the Ground Floor next to the Staff Entrance.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: How do I get a permit for the company parking garage?\nA: Submit your vehicle registration details to Admin; permits are issued based on seniority and distance.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: Can I move the furniture in my office myself?\nA: No, please log a 'Furniture Move' request. Facilities must ensure that exits and fire paths remain clear.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: Where can I find a map of the warehouse layout?\nA: Layout maps are posted near every fire extinguisher and available on the Facilities intranet page.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: How do I request extra chairs for a presentation?\nA: Submit an 'Event Support' request at least 48 hours before the event to ensure chairs are moved.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: The automatic front doors are making a grinding noise.\nA: Please notify Security immediately. They will switch the doors to manual mode and call the technician.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: Who do I ask for a physical copy of the Building Safety Manual?\nA: Physical copies are kept at the Security Desk and the HR office for reference.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: How do I ship an international package for work?\nA: Bring the packed items to the Mailroom with a completed 'International Shipping' form and cost center code.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: Can I use the office fridge to store frozen DIY supplies?\nA: No, office fridges are for food only. Flammable or chemical supplies must be stored in the DIY hazmat locker.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: What is the procedure for an elevator breakdown?\nA: Use the emergency phone inside the elevator. If you are outside, call the lift service number on the plaque.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: How do I order a new company ID badge?\nA: Fill out the 'ID Request' form on the Admin portal; new badges are printed every Tuesday and Thursday.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: Is there a quiet room for nursing mothers?\nA: Yes, the 'Wellness Suite' on the 3rd floor is available; it is a private, lockable space with a fridge.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: How do I request more recycling bins for the toy department?\nA: Email facilities@shopunow.com with your location and the number of bins required.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: Who handles the landscape maintenance for the storefront?\nA: Facilities manages the landscaping contract; gardeners visit every Monday and Thursday morning.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: I lost my office key. What is the fine?\nA: A replacement key costs $25, which will be deducted from your next paycheck once you sign the replacement form.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: How do I check if a specific book is in the staff library?\nA: The staff library catalog is available on the 'Employee Growth' section of the intranet.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: The carpet in the lobby is stained. When will it be cleaned?\nA: Spot cleaning is done nightly; a full steam clean is scheduled for the first Sunday of every quarter.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: How do I get a barcode for my personal laptop to bring it on-site?\nA: Visit Security to have your device registered and a 'Personal Device' sticker applied.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: What are the hours for the staff canteen?\nA: The canteen is open for breakfast from 7:30–9:30 AM and lunch from 11:30 AM–2:00 PM.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: How do I request a courier for an urgent same-day delivery?\nA: Call the Mailroom at ext. 305 before 11:00 AM to schedule a same-day local courier.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: Can I use the DIY demo area for a personal project after hours?\nA: No, the demo area is for customer workshops and staff training only due to insurance restrictions.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: Where is the master list of all internal phone extensions?\nA: The 'Employee Directory' on the intranet allows you to search by name, department, or extension.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: How do I report a broken chair in the breakroom?\nA: Place a 'Do Not Use' sign on it and notify Facilities via the maintenance portal.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: Are we allowed to decorate our desks for holidays?\nA: Yes, provided the decorations are not a fire hazard (no candles/plug-in lights) and don't block visibility.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: Who do I contact for a building access audit for my team?\nA: Email the Facilities Manager to request a report of all card-swipes for your department's secure zones.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: How do I request a refill for the first aid kits in the DIY aisle?\nA: Notify the Floor Safety Officer who will coordinate with Admin to replenish supplies.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: Is there a place to shower if I bike to work?\nA: Yes, showers are located in the basement level changing rooms next to the bike storage.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: How do I update my desk location in the seating chart?\nA: Log into the 'Workspace' app and drag your icon to your new desk to keep the directory accurate.",
+        "category": "AD"
+    },
+    {
+        "doc": "Q: What is the policy for using office printers for personal documents?\nA: Limited personal printing (under 5 pages) is allowed, but high-volume printing is prohibited.",
+        "category": "AD"
+    },
+        {
+        "doc": "Q: What payment methods does ShopUNow accept?\nA: We accept all major credit/debit cards (Visa, Mastercard, Amex), PayPal, Apple Pay, and Google Pay.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Why was my credit card declined?\nA: Declines can occur due to incorrect billing details, expired cards, or bank security blocks. Please verify your info or contact your bank.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: How long does a refund take to show up in my account?\nA: Once processed, refunds typically appear in your account within 5-7 business days, depending on your financial institution.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Can I pay for my DIY equipment in installments?\nA: Yes, ShopUNow offers interest-free financing through Klarna and Afterpay for purchases over $150.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Where can I download the VAT invoice for my business purchase?\nA: You can download your invoice from the 'Order History' section in your account dashboard immediately after purchase.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Does ShopUNow offer a price-match guarantee?\nA: Yes, if you find a lower price on an identical DIY tool or toy at a local competitor, we will match it at the time of purchase.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Can I use multiple discount codes on one order?\nA: Only one promotional code can be applied per transaction, though these can often be combined with gift card balances.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: How do I check the balance of my ShopUNow gift card?\nA: Enter your gift card number and PIN in the 'Gift Cards' section of our website footer to view your remaining balance.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: I was charged twice for my order. What should I do?\nA: Please contact our support team with your order number; often one charge is a temporary 'authorization hold' that will drop off.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Do you offer tax-exempt purchasing for non-profit organizations?\nA: Yes. Please email your tax-exempt certificate to billing@shopunow.com before placing your order to set up an exempt account.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Is my payment information secure on your site?\nA: Absolutely. We use industry-standard SSL encryption and are fully PCI-DSS compliant to ensure your data is protected.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Can I change my billing address after the order is placed?\nA: For security reasons, billing addresses cannot be changed once an order is submitted. Please cancel and re-order if necessary.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Why is there a small $1 charge on my statement?\nA: This is a temporary pre-authorization charge used to verify your card's validity and will be removed automatically within 48 hours.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Do you accept personal checks for DIY bulk orders?\nA: We do not accept personal checks, but we do accept bank transfers for large-scale DIY or contractor orders.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: How do I apply a store credit to my current checkout?\nA: During the payment step, select 'Apply Store Credit' from your available wallet options before entering a secondary payment method.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: What happens if a refund is sent to a closed credit card?\nA: Most banks will automatically route the funds to your new card or issue a check. Contact your bank if the funds don't appear after 10 days.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Can I get a refund on a digital gift card?\nA: Digital gift cards are non-refundable once the code has been generated and sent to the recipient.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Does the price include customs duties for international clothing orders?\nA: For most regions, duties are calculated at checkout. If not, you may be responsible for local import taxes upon delivery.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: How do I update my saved payment method?\nA: Log in to your account, go to 'Account Settings,' and select 'Payment Methods' to add, remove, or edit your cards.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Do you offer a student discount?\nA: Yes, students can verify their status via UNiDAYS to receive a 10% discount on clothing and books.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: My coupon code isn't working on DIY power tools.\nA: Some brands are excluded from general promotions due to manufacturer pricing policies. Check the 'Terms & Conditions' of the code.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Can I pay over the phone?\nA: To protect your security, we do not take credit card information over the phone. All payments must be made via our secure online portal.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Do you offer corporate accounts for libraries or schools buying books?\nA: Yes, we offer 'Pro Accounts' with Net-30 invoicing terms for qualifying educational and corporate institutions.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Is there a fee for using PayPal?\nA: No, ShopUNow does not charge any additional transaction fees for using PayPal as your payment method.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: I forgot to add my discount code. Can you apply it retroactively?\nA: If the order hasn't shipped, contact us and we can apply the credit; otherwise, we can issue a price adjustment as store credit.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Why does the price change when I select a different clothing size?\nA: Occasionally, plus-size or specialized items have different manufacturing costs which may reflect a slight price variation.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: How do I receive a refund if I no longer have my original receipt?\nA: If you used a ShopUNow Rewards account, we can look up your receipt. Otherwise, we can only offer store credit at the current sale price.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Does ShopUNow save my CVV number?\nA: No, we never store your CVV. It must be entered for every transaction to ensure maximum security.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Can I use a foreign credit card for a US delivery?\nA: Yes, as long as the card is a major international brand like Visa or Mastercard, though your bank may charge a conversion fee.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: What currency will I be charged in?\nA: You will be charged in the currency displayed at checkout, which is typically based on your geolocation.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Are there any hidden fees for DIY assembly services?\nA: No, all assembly fees are quoted upfront at checkout. There are no additional 'on-the-day' fees unless parts are missing.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: My payment was successful but I didn't get a confirmation email.\nA: Please check your spam folder. If it's not there, verify your email address in your account settings or contact support.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Can I pay with a ShopUNow gift card and a credit card together?\nA: Yes, the system will apply the gift card balance first, and the remaining amount can be covered by your credit card.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: How do I claim a tax refund if I am an international visitor?\nA: We can provide a stamped 'Tax-Free Shopping' form at any physical store location with a valid foreign passport.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Why is my billing address different from my shipping address?\nA: This is common for gifts. However, your billing address must match the address on file with your bank to avoid declines.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Do you offer bulk buy discounts for toys?\nA: For orders of 20+ of the same toy (e.g., for events), please contact our 'Bulk Sales' team for a custom quote.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: How can I see a breakdown of the sales tax on my order?\nA: A full breakdown of local and state taxes is provided on the final 'Review Order' page and on your digital receipt.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Can I set up 'One-Click' purchasing?\nA: Yes, you can enable this in your account settings once you have saved a default shipping address and payment method.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Does ShopUNow accept Bitcoin or cryptocurrency?\nA: Currently, we do not accept cryptocurrency. We are constantly evaluating new payment technologies for the future.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: What is the 'ShopUNow Credit' in my account?\nA: This is credit issued from returns or promotions that can be used like cash on any future ShopUNow purchase.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Why was I charged sales tax on a book order?\nA: Sales tax laws vary by state. Many states require sales tax on all physical goods, including books.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Can I use a pre-paid Visa/Mastercard gift card?\nA: Yes, but ensure the card is registered with a billing address, or the transaction may be declined by the processor.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: How do I remove a card from my account?\nA: In 'Payment Methods,' click the 'Remove' button next to the card you wish to delete from your profile.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Do you offer 'Pay on Delivery'?\nA: No, all orders must be paid in full at the time of checkout on our secure website.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: How do I change my Klarna payment date?\nA: All adjustments to installment plans must be handled directly through the Klarna app or website.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: How do I apply for a ShopUNow Store Credit Card?\nA: Apply via the 'Financial Services' link. Approval offers a 5% discount on all future DIY and Clothing orders.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Why is my refund amount lower than the original price?\nA: This usually happens if a restocking fee was applied or if original shipping costs were non-refundable.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Is there a maximum limit for a single transaction?\nA: Online transactions are limited to $10,000. For larger contractor DIY purchases, please contact our Sales Desk.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Can I pay with two different credit cards?\nA: Currently, our system only allows one credit card per order, though you can combine a gift card with a credit card.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: Who do I contact for a billing error on my subscription?\nA: Please email subscriptions@shopunow.com with your account ID for any recurring billing issues.",
+        "category": "BILLING"
+    },
+    {
+        "doc": "Q: How can I track my ShopUNow order?\nA: Once shipped, you will receive an email with a tracking number. You can also track it in the 'My Orders' section of our site.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: How long does standard shipping take?\nA: Standard shipping typically takes 3-5 business days for clothing and toys, and 5-7 days for larger DIY items.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Do you offer same-day delivery?\nA: Same-day delivery is available in select zip codes for orders placed before 11:00 AM on eligible clothing and toy items.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: My DIY power tool arrived damaged. What should I do?\nA: Please take photos of the damage and contact us within 48 hours. We will arrange a free replacement and pickup.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Can I change my shipping address after the order is shipped?\nA: Once an order has left our warehouse, we cannot change the address. You may be able to redirect it via the carrier's app.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Do you ship books and clothing internationally?\nA: Yes, we ship to over 50 countries. Shipping rates and delivery times vary based on the destination.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: What happens if I am not home to receive a large DIY delivery?\nA: Larger items require a signature. The carrier will contact you to schedule a window; if missed, they will attempt redelivery.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Is there a way to get free shipping?\nA: ShopUNow offers free standard shipping on all orders over $50. ShopUNow Rewards members get free shipping on all orders.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Why is my order being shipped in multiple packages?\nA: To get your items to you faster, we may ship items from different warehouses if they are not all in stock at one location.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: My tracking says 'Delivered' but I don't see my package.\nA: Please check with neighbors first. If not found within 24 hours, contact us to start a trace with the carrier.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Do you ship to P.O. Boxes?\nA: We can ship books and clothing to P.O. Boxes, but large DIY tools and toys must be shipped to a physical street address.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: What is 'White Glove' delivery for DIY furniture?\nA: This service includes delivery to your room of choice, unpacking, and removal of all packaging materials.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Can I pick up my online order at a ShopUNow store?\nA: Yes, select 'In-Store Pickup' at checkout. Most items are ready within 2 hours if they are in stock at your local branch.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: How much does it cost to ship a heavy DIY workbench?\nA: Heavy items are subject to a 'Large Item Surcharge' calculated based on weight and your distance from our warehouse.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Are your book shipments eco-friendly?\nA: Yes, we use 100% recyclable cardboard packaging and minimize plastic filler in all our book and clothing shipments.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Do you offer 'Ship to Store' for items not in stock locally?\nA: Yes, you can have any item shipped to your local store for free pickup, typically arriving within 3-5 business days.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: What carriers do you use?\nA: We partner with UPS, FedEx, and USPS for standard items, and specialized freight carriers for bulk DIY supplies.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Can I schedule a specific time for my delivery?\nA: For standard parcels, no. For freight/large DIY deliveries, the carrier will provide a 4-hour window for your convenience.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Is the packaging discreet?\nA: Clothing and books ship in standard branded bags. High-value DIY tools ship in plain brown boxes to prevent theft.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Do you ship to APO/FPO addresses?\nA: Yes, we proudly ship to our military members via USPS, though delivery times may be longer.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: What should I do if my toy order is missing an item?\nA: Check your packing slip to see if it's in a separate shipment. If not, contact support for a missing item claim.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Can I request 'No Signature Required' for my delivery?\nA: You can specify this in notes, but it is ultimately at the carrier's discretion based on the safety of the area.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: How do I return an item I bought online?\nA: You can return items at any ShopUNow store or print a pre-paid return label from our Online Return Portal.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Why is my DIY wood flooring taking so long to ship?\nA: Natural materials sometimes require specialized climate-controlled transport or are shipped directly from the mill.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Do you offer express shipping on weekends?\nA: Orders placed on Friday after 2 PM will ship Monday. We do not currently offer Sunday delivery for standard shipping.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Can I track my 'In-Store Pickup' order?\nA: You will receive a 'Ready for Pickup' email. You can also check the status in your account dashboard.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Does ShopUNow ship to Alaska and Hawaii?\nA: Yes, though these locations are excluded from free shipping promotions and take slightly longer to arrive.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: How do I report a stolen package?\nA: First, file a police report, then contact our support team with the report number so we can assist with a claim.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Can I consolidate multiple orders into one shipment?\nA: Once an order is placed, we cannot manually group it, but our system tries to do this automatically if possible.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: What is the 'Shipping Protection' at checkout?\nA: This is optional insurance that guarantees an immediate replacement if your order is lost, damaged, or stolen.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Do you provide a gift-wrapping service for toys?\nA: Yes, for a small fee, we can gift-wrap toys and books and include a personalized printed message.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Why is my international tracking not updating?\nA: International packages often stop updating once they leave the origin country and resume once they clear local customs.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Can I use my own FedEx account for shipping?\nA: Currently, we only use ShopUNow's preferred carrier accounts to manage tracking and logistics integration.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Is there a weight limit for residential deliveries?\nA: Individual boxes over 150 lbs must be shipped via freight and delivered to the curbside.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: How do I know if an item is 'Hazmat' for shipping?\nA: Items like DIY spray paints or lithium batteries will have a 'Hazmat' label and require ground-only shipping.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Can I cancel an order if it hasn't shipped yet?\nA: You have a 30-minute window after placing an order to cancel it before it is sent to the warehouse for fulfillment.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Do you ship on holidays?\nA: Our warehouses and carriers are closed on major holidays, which may delay your shipment by 24-48 hours.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: How are fragile book box sets protected?\nA: We use reinforced corner protectors and bubble wrap to ensure collectible sets arrive in pristine condition.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Can I change my pickup person for an 'In-Store' order?\nA: Yes, you can add an 'Alternate Pickup Person' in the order confirmation screen or by calling the store.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: What is 'Curbside Delivery' for DIY lumber?\nA: The driver will drop the pallet at the end of your driveway or the curb. They cannot bring items inside the house.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Do you ship to freight forwarders?\nA: Yes, but ShopUNow's responsibility ends once the package is delivered to the forwarder's US address.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: How do I get a return shipping label for a heavy toy?\nA: Large toys may require a specialized carrier. Contact us to schedule a home pickup for items over 50 lbs.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Why does my tracking say 'Label Created' for 2 days?\nA: This means the order is packed and waiting for the carrier's pickup. It will update once scanned by the driver.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Is my delivery carbon-neutral?\nA: ShopUNow offers a 'Carbon-Neutral' checkout option where you can pay a few cents to offset delivery emissions.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Can I redirect a clothing order to a UPS Access Point?\nA: Yes, once you have a tracking number, you can use the UPS My Choice app to redirect it to a nearby locker.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Do you ship DIY chemicals (like paint thinner) to California?\nA: Some chemicals are restricted by state law. If an item cannot ship to your zip code, you will be notified at checkout.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: What should I do if my package is stuck in customs?\nA: Customs delays are outside our control. If they require more info, contact us and we will provide the paperwork.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Do you offer Saturday delivery for DIY supplies?\nA: Saturday delivery is available for standard parcels but generally not for freight or LTL shipments.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: How long do I have to pick up my 'In-Store' order?\nA: We will hold your order for 7 days. If not picked up, items will be returned to stock and a refund issued.",
+        "category": "LOGISTICS"
+    },
+    {
+        "doc": "Q: Can I get a shipping refund if my order is late?\nA: If you paid for expedited shipping and it arrives late due to carrier error, we will refund your shipping costs.",
+        "category": "LOGISTICS"
+    }
+]

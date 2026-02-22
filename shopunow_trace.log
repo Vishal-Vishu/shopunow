@@ -1,0 +1,79 @@
+WARNING:opentelemetry.exporter.otlp.proto.grpc.exporter:Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 0.97s.
+ERROR:opentelemetry.exporter.otlp.proto.grpc.exporter:Failed to export traces to localhost:4317, error code: StatusCode.UNAVAILABLE
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'ChatPromptValue' object has no attribute 'get'")
+WARNING:opentelemetry.exporter.otlp.proto.grpc.exporter:Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 0.99s.
+WARNING:opentelemetry.exporter.otlp.proto.grpc.exporter:Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 3.35s.
+ERROR:opentelemetry.exporter.otlp.proto.grpc.exporter:Failed to export traces to localhost:4317, error code: StatusCode.UNAVAILABLE
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+WARNING:opentelemetry.exporter.otlp.proto.grpc.exporter:Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 1.00s.
+ERROR:opentelemetry.exporter.otlp.proto.grpc.exporter:Failed to export traces to localhost:4317, error code: StatusCode.UNAVAILABLE
+WARNING:opentelemetry.exporter.otlp.proto.grpc.exporter:Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 1.04s.
+ERROR:opentelemetry.exporter.otlp.proto.grpc.exporter:Failed to export traces to localhost:4317, error code: StatusCode.UNAVAILABLE
+WARNING:opentelemetry.exporter.otlp.proto.grpc.exporter:Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 0.98s.
+ERROR:opentelemetry.exporter.otlp.proto.grpc.exporter:Failed to export traces to localhost:4317, error code: StatusCode.UNAVAILABLE
+WARNING:opentelemetry.exporter.otlp.proto.grpc.exporter:Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 0.96s.
+ERROR:opentelemetry.exporter.otlp.proto.grpc.exporter:Failed to export traces to localhost:4317, error code: StatusCode.UNAVAILABLE
+WARNING:opentelemetry.exporter.otlp.proto.grpc.exporter:Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 0.84s.
+ERROR:opentelemetry.exporter.otlp.proto.grpc.exporter:Failed to export traces to localhost:4317, error code: StatusCode.UNAVAILABLE
+WARNING:opentelemetry.exporter.otlp.proto.grpc.exporter:Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 0.85s.
+ERROR:opentelemetry.exporter.otlp.proto.grpc.exporter:Failed to export traces to localhost:4317, error code: StatusCode.UNAVAILABLE
+WARNING:opentelemetry.exporter.otlp.proto.grpc.exporter:Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 1.12s.
+ERROR:opentelemetry.exporter.otlp.proto.grpc.exporter:Failed to export traces to localhost:4317, error code: StatusCode.UNAVAILABLE
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'ChatPromptValue' object has no attribute 'get'")
+WARNING:opentelemetry.exporter.otlp.proto.grpc.exporter:Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 1.12s.
+ERROR:opentelemetry.exporter.otlp.proto.grpc.exporter:Failed to export traces to localhost:4317, error code: StatusCode.UNAVAILABLE
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+WARNING:opentelemetry.exporter.otlp.proto.grpc.exporter:Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 0.96s.
+ERROR:opentelemetry.exporter.otlp.proto.grpc.exporter:Failed to export traces to localhost:4317, error code: StatusCode.UNAVAILABLE
+WARNING:opentelemetry.exporter.otlp.proto.grpc.exporter:Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 0.98s.
+ERROR:opentelemetry.exporter.otlp.proto.grpc.exporter:Failed to export traces to localhost:4317, error code: StatusCode.UNAVAILABLE
+WARNING:opentelemetry.exporter.otlp.proto.grpc.exporter:Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 0.86s.
+ERROR:opentelemetry.exporter.otlp.proto.grpc.exporter:Failed to export traces to localhost:4317, error code: StatusCode.UNAVAILABLE
+WARNING:opentelemetry.exporter.otlp.proto.grpc.exporter:Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 1.08s.
+ERROR:opentelemetry.exporter.otlp.proto.grpc.exporter:Failed to export traces to localhost:4317, error code: StatusCode.UNAVAILABLE
+WARNING:opentelemetry.exporter.otlp.proto.grpc.exporter:Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 0.83s.
+ERROR:opentelemetry.exporter.otlp.proto.grpc.exporter:Failed to export traces to localhost:4317, error code: StatusCode.UNAVAILABLE
+WARNING:opentelemetry.exporter.otlp.proto.grpc.exporter:Transient error StatusCode.UNAVAILABLE encountered while exporting traces to localhost:4317, retrying in 0.99s.
+ERROR:opentelemetry.exporter.otlp.proto.grpc.exporter:Failed to export traces to localhost:4317, error code: StatusCode.UNAVAILABLE
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'ChatPromptValue' object has no attribute 'get'")
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'RewriteOutput' object has no attribute 'get'")
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'RewriteOutput' object has no attribute 'get'")
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'str' object has no attribute 'get'")
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'ChatPromptValue' object has no attribute 'get'")
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'AIMessage' object has no attribute 'get'")
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'str' object has no attribute 'get'")
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'ChatPromptValue' object has no attribute 'get'")
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'DepartmentRouting' object has no attribute 'get'")
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'DepartmentRouting' object has no attribute 'get'")
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'str' object has no attribute 'get'")
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'ChatPromptValue' object has no attribute 'get'")
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'AIMessage' object has no attribute 'get'")
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'GradeAnswer' object has no attribute 'get'")
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'GradeAnswer' object has no attribute 'get'")
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'ChatPromptValue' object has no attribute 'get'")
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'RewriteOutput' object has no attribute 'get'")
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'RewriteOutput' object has no attribute 'get'")
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'str' object has no attribute 'get'")
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'ChatPromptValue' object has no attribute 'get'")
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'AIMessage' object has no attribute 'get'")
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'str' object has no attribute 'get'")
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'ChatPromptValue' object has no attribute 'get'")
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'DepartmentRouting' object has no attribute 'get'")
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'DepartmentRouting' object has no attribute 'get'")
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'str' object has no attribute 'get'")
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'ChatPromptValue' object has no attribute 'get'")
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'AIMessage' object has no attribute 'get'")
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'GradeAnswer' object has no attribute 'get'")
+WARNING:langchain_core.callbacks.manager:Error in GraphBusinessLogger.on_chain_end callback: AttributeError("'GradeAnswer' object has no attribute 'get'")

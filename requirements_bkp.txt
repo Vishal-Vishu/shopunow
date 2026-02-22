@@ -1,0 +1,9 @@
+pinecone-client
+openai
+python-dotenv
+langchain==0.3.21
+langchain-openai==0.3.18
+langchain-community==0.3.18
+langgraph==0.3.18
+langchain-tavily==0.1.5
+langchain-pinecone==0.2.13

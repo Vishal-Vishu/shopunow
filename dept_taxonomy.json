@@ -1,0 +1,48 @@
+{
+  "departments": {
+    "HR": {
+      "core_keywords": ["leave", "policy", "salary", "payroll", "benefits", "hiring", "onboarding", "grievance", "conduct", "evaluation"],
+      "sub_topics": {
+        "time_off": ["vacation", "bereavement", "medical leave", "time off", "sick leave", "sabbatical"],
+        "compensation": ["pay stub", "w-2", "tax documents", "bonus", "salary review", "overtime", "direct deposit"],
+        "compliance": ["harassment", "discrimination", "ethics", "disciplinary", "confidentiality", "osha", "safety"]
+      }
+    },
+    "IT": {
+      "core_keywords": ["password", "software", "hardware", "vpn", "access", "phishing", "security", "network", "backup", "server"],
+      "sub_topics": {
+        "access_mgmt": ["reset", "forgot password", "mfa", "permissions", "login", "credentials"],
+        "software_apps": ["ms office", "installation", "application", "license", "intranet", "wiki"],
+        "cybersecurity": ["data breach", "incident", "malware", "encryption", "threat", "mfa"]
+      }
+    },
+    "FACILITIES": {
+      "core_keywords": ["maintenance", "office", "repair", "parking", "cleaning", "building", "access", "furniture", "safety", "hazard"],
+      "sub_topics": {
+        "infrastructure": ["hvac", "ac", "heating", "leak", "plumbing", "electrical", "pest"],
+        "workspace": ["desk", "hot desk", "meeting room", "conference", "supplies", "reservations"],
+        "logistics": ["visitor pass", "loading dock", "shipment", "delivery", "parking permit"]
+      }
+    },
+    "BILLING": {
+      "core_keywords": ["payment", "invoice", "refund", "charge", "card", "declined", "promo", "discount", "tax", "fee"],
+      "sub_topics": {
+        "transactions": ["checkout", "credit card", "paypal", "apple pay", "google pay", "currency"],
+        "customer_issues": ["wrong item", "damaged", "incorrect charge", "dispute", "restocking fee"],
+        "accounting": ["billing history", "transaction record", "tax rate", "sales tax"]
+      }
+    },
+    "SHIPPING": {
+      "core_keywords": ["track", "delivery", "carrier", "address", "delay", "shipping", "transit", "lost", "damaged", "export"],
+      "sub_topics": {
+        "tracking": ["tracking number", "delivered", "missing", "notification", "investigation"],
+        "fulfillment": ["standard shipping", "expedited", "express", "po box", "business address"],
+        "international": ["customs", "duties", "restrictions", "hazardous materials", "compliance"]
+      }
+    }
+  },
+  "global_guardrails": {
+    "prohibited": ["scam", "fraud", "legal action", "sue", "threat", "violence", "politics", "competitor"],
+    "sensitive": ["pii", "personal bank details", "medical history", "password sharing"]
+  }
+}
