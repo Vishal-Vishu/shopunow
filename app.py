@@ -66,11 +66,9 @@ if "escalation_active" not in st.session_state:
 
 st.subheader("💬 Conversation")
 
-for item in st.session_state.chat_history:
-    with st.chat_message("user"):
-        st.markdown(item["query"])
-    with st.chat_message("assistant"):
-        st.markdown(item["response"])
+for message in st.session_state.chat_history:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
 
 # ==========================================================
@@ -106,26 +104,38 @@ if st.session_state.escalation_active:
             if not name or not email or not issue_details:
                 st.error("Please complete all fields.")
             else:
+                # Find last user message safely
+                last_user_message = None
+                for msg in reversed(st.session_state.chat_history):
+                    if msg["role"] == "user":
+                        last_user_message = msg["content"]
+                        break
+
                 save_support_ticket({
                     "phone": phone,
                     "name": name,
                     "email": email,
                     "issue": issue_details,
-                    "original_query": st.session_state.chat_history[-1]["query"]
+                    "original_query": last_user_message
                 })
 
-                confirmation_message = {
+                confirmation_text = (
+                    "✅ Your support request has been submitted successfully. "
+                    "Our team will contact you shortly."
+                )
+
+                # Update session state
+                st.session_state.chat_history.append(
+                    {"role": "assistant", "content": confirmation_text}
+                )
+
+                # Store in DB
+                append_user_history(phone, {
                     "query": "Support form submitted",
-                    "response": "✅ Your support request has been submitted successfully. Our team will contact you shortly."
-                }
+                    "response": confirmation_text
+                })
 
-                st.session_state.chat_history.append(confirmation_message)
-                append_user_history(phone, confirmation_message)
-
-                # ✅ Reset escalation state
                 st.session_state.escalation_active = False
-
-                # ✅ Rerun to collapse form and resume chat
                 st.rerun()
 
     st.stop()
@@ -146,7 +156,6 @@ uploaded_file = st.file_uploader(
 # ==========================================================
 
 user_query = st.chat_input("Type your message here...")
-combined_query = ""
 
 if user_query:
 
@@ -181,8 +190,6 @@ Please consider both while responding.
     # Invoke LangGraph
     # ======================================================
 
-    print("Combined query ==", combined_query)
-
     with st.spinner("Thinking..."):
         result = asyncio.run(graph.ainvoke({
             "query": combined_query,
@@ -198,11 +205,8 @@ Please consider both while responding.
     final_response = result.get("final_response")
     escalation_required = result.get("escalation_required", False)
 
-    from opentelemetry import trace
-    from config import setup_phoenix
-
-    tracer = setup_phoenix()
-    tracer.force_flush()
+    if not final_response:
+        final_response = "⚠️ Sorry, no response was generated."
 
     # ======================================================
     # Escalation Handling
@@ -212,32 +216,43 @@ Please consider both while responding.
 
         st.session_state.escalation_active = True
 
-        escalation_entry = {
-            "query": user_query,
-            "response": "⚠️ Escalated to human support."
-        }
+        escalation_text = "⚠️ Escalated to human support."
 
-        st.session_state.chat_history.append(escalation_entry)
-        append_user_history(phone, escalation_entry)
+        # Update session state
+        st.session_state.chat_history.append(
+            {"role": "user", "content": user_query}
+        )
+
+        st.session_state.chat_history.append(
+            {"role": "assistant", "content": escalation_text}
+        )
+
+        # Store in DB
+        append_user_history(phone, {
+            "query": user_query,
+            "response": escalation_text
+        })
 
         st.rerun()
 
     # ======================================================
-    # Normal RAG Response
+    # Normal Response
     # ======================================================
-
-    if not final_response:
-        final_response = "⚠️ Sorry, no response was generated."
 
     with st.chat_message("assistant"):
         st.markdown(final_response)
 
-    new_entry = {
+    # Update session state
+    st.session_state.chat_history.append(
+        {"role": "user", "content": user_query}
+    )
+
+    st.session_state.chat_history.append(
+        {"role": "assistant", "content": final_response}
+    )
+
+    # Store in DB
+    append_user_history(phone, {
         "query": user_query,
         "response": final_response
-    }
-
-    st.session_state.chat_history.append(new_entry)
-    append_user_history(phone, new_entry)
-
-
+    })

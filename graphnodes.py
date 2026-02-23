@@ -289,6 +289,73 @@ def build_conversation_context(state: ShopState, max_turns: int = 2):
     return final_context.strip()
             
 
+def sentiment_node_future_node(state: ShopState):
+
+    print("Affective Analysis Node Activated")
+
+    conversation_context = build_conversation_context(state)
+
+    llm = ChatOpenAI(
+        model="gpt-4o-mini",
+        temperature=0
+    ).with_structured_output(AffectiveOutput)
+
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", """
+You are an affective analysis engine for ShopUNow.
+
+Analyze the user's current emotional state.
+
+Return:
+
+1. sentiment: positive | neutral | negative
+2. emotion: choose exactly ONE from:
+   [anger, frustration, confusion, fear, sadness, disappointment,
+    neutral, satisfaction, gratitude]
+3. emotion_intensity: float between 0 and 1
+4. requires_escalation: true if:
+   - strong anger
+   - repeated complaint tone
+   - legal threats
+   - emotion_intensity > 0.75 and emotion in [anger, frustration]
+
+Rules:
+- Informational queries are neutral.
+- Asking for help calmly is neutral.
+- Do NOT over-classify as negative.
+- Be conservative and precise.
+
+Return structured output only.
+"""),
+        ("human", "{context}")
+    ])
+
+    chain = prompt | llm
+
+    try:
+        result = chain.invoke({"context": conversation_context})
+
+        print("Affective Result:", result)
+
+        return {
+            "sentiment": result.sentiment,
+            "emotion": result.emotion,
+            "emotion_intensity": result.emotion_intensity,
+            "escalation_required": result.requires_escalation,
+            "node_name": "affective node"
+        }
+
+    except Exception as e:
+        print("Affective analysis error:", e)
+
+        # Safe fallback
+        return {
+            "sentiment": "neutral",
+            "emotion": "neutral",
+            "emotion_intensity": 0.0,
+            "escalation_required": False,
+            "node_name": "affective node"
+        }
 
 
 def sentiment_node(state: ShopState):
@@ -614,6 +681,9 @@ async def execute_single_department(dept, latest_query, context, vectorstore, bm
         return None
 
     llm, prompt = AGENT_MAP[dept]
+
+    
+
 
     enhanced_query = f"""
 PRIMARY TASK: Answer the following user query: {latest_query}

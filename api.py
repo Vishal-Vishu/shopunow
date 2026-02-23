@@ -91,6 +91,27 @@ Attached Document Content:
 
     return ChatResponse(response=result.get("final_response", ""))
 
+class SentimentResponse(BaseModel):
+    sentiment: Optional[str] = None
+
+
+@app.post("/analyze-sentiment", response_model=SentimentResponse)
+async def analyze_sentiment(request: ChatRequest):
+
+    result = await graph.ainvoke({
+        "query": request.query,
+        "phone": request.phone,
+        "history": request.history,
+        "sentiment": None,
+        "departments": None,
+        "responses": None,
+        "final_response": None
+    })
+
+    return SentimentResponse(
+        sentiment=result.get("sentiment")
+    )    
+
 
 # ==========================================================
 # Health Check

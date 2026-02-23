@@ -22,7 +22,7 @@ class BM25Retriever:
         filtered = [
             (item, score)
             for item, score in scored_items
-            if item["category"] == department
+            if item.get("category") == department
         ]
 
         # Sort by BM25 score

@@ -30,6 +30,24 @@ class GradeAnswer(BaseModel):
     #improvement_feedback: str = Field(description="Critique of what is missing or wrong.")
     node_name: str = Field(description="Name of the node being executed")
 
+from typing import Literal
+
+class AffectiveOutput(BaseModel):
+    sentiment: Literal["positive", "neutral", "negative"]
+    emotion: Literal[
+        "anger",
+        "frustration",
+        "confusion",
+        "fear",
+        "sadness",
+        "disappointment",
+        "neutral",
+        "satisfaction",
+        "gratitude"
+    ]
+    emotion_intensity: float
+    requires_escalation: bool    
+
 import logging
 from langchain_core.callbacks import BaseCallbackHandler
 

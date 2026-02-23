@@ -1,33 +1,85 @@
-import json
-import os
+import hashlib
+from sqlalchemy import create_engine, Column, Integer, String, Text, Boolean, TIMESTAMP
+from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.sql import func
 
-MEMORY_FILE = "conversation_memory.json"
+DATABASE_URL = "sqlite:///chat_memory.db"
 
-def load_memory():
-    # 1. Check if file exists
-    if not os.path.exists(MEMORY_FILE):
-        return {}
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(bind=engine)
+Base = declarative_base()
 
-    # 2. Check if file is empty (size is 0 bytes)
-    if os.path.getsize(MEMORY_FILE) == 0:
-        return {}
+class Message(Base):
+    __tablename__ = "messages"
 
-    try:
-        with open(MEMORY_FILE, "r") as f:
-            return json.load(f)
-    except (json.JSONDecodeError, ValueError):
-        # 3. Handle cases where file has content but it's not valid JSON
-        return {}
+    id = Column(Integer, primary_key=True)
+    phone = Column(String(15), index=True)
+    role = Column(String(20))
+    content = Column(Text)
+    escalation = Column(Boolean, default=False)
+    guardrail_triggered = Column(Boolean, default=False)
+    created_at = Column(TIMESTAMP, server_default=func.now())
 
-def save_memory(memory):
-    with open(MEMORY_FILE, "w") as f:
-        json.dump(memory, f, indent=2)
+Base.metadata.create_all(bind=engine)
 
-def get_user_history(phone):
-    memory = load_memory()
-    return memory.get(phone, [])
+
+def detect_flags(response_text: str):
+    escalation = "Escalated to human support" in response_text
+    guardrail = "outside the supported scope" in response_text
+    return escalation, guardrail
+
 
 def append_user_history(phone, message):
-    memory = load_memory()
-    memory.setdefault(phone, []).append(message)
-    save_memory(memory)
+    """
+    message format expected:
+    {
+        "query": "...",
+        "response": "..."
+    }
+    """
+
+    db = SessionLocal()
+
+    # Store user message
+    db.add(Message(
+        phone=phone,
+        role="user",
+        content=message["query"]
+    ))
+
+    # Detect flags
+    escalation, guardrail = detect_flags(message["response"])
+
+    # Store assistant message
+    db.add(Message(
+        phone=phone,
+        role="assistant",
+        content=message["response"],
+        escalation=escalation,
+        guardrail_triggered=guardrail
+    ))
+
+    db.commit()
+    db.close()
+
+
+def get_user_history(phone):
+    db = SessionLocal()
+
+    messages = (
+        db.query(Message)
+        .filter(Message.phone == phone)
+        .order_by(Message.created_at)
+        .all()
+    )
+
+    history = [
+        {
+            "role": msg.role,
+            "content": msg.content
+        }
+        for msg in messages
+    ]
+
+    db.close()
+    return history
