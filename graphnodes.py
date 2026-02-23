@@ -190,6 +190,8 @@ def rewrite_node(state: ShopState):
         result = chain.invoke({"query": query})
         print("Query rewriter finished execution")
         print("Result from query rewriter llm= ",result)
+        span.set_attribute("needs_rewrite",result.needs_rewrite)
+        span.set_attribute("optimized_query",result.rewritten_query)
         return {
             "needs_rewrite": result.needs_rewrite,
             "optimized_query": result.rewritten_query,

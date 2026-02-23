@@ -17,7 +17,7 @@ from graphnodes import (
 
 from config import setup_phoenix
 
-#setup_phoenix()
+setup_phoenix()
 
 def node_tracer(event):
     # This captures the output of every node automatically

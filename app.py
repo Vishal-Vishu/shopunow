@@ -196,8 +196,11 @@ Please consider both while responding.
     final_response = result.get("final_response")
     escalation_required = result.get("escalation_required", False)
 
-    #from opentelemetry import trace
-    #trace.get_tracer_provider().force_flush()
+    from opentelemetry import trace
+    from config import setup_phoenix
+
+    tracer = setup_phoenix()
+    tracer.force_flush()
 
     # ======================================================
     # Escalation Handling

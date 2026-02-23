@@ -63,13 +63,13 @@ CATEGORY_MAP = TAXONOMY["category_map"]
 def setup_phoenix():
     """Configures Phoenix collector and API keys for tracing."""
     
-    os.environ["PHOENIX_COLLECTOR_ENDPOINT"] = ""#os.environ["PHOENIX_COLLECTOR_ENDPOINT"] 
+    #os.environ["PHOENIX_COLLECTOR_ENDPOINT"] = "" #os.environ["PHOENIX_COLLECTOR_ENDPOINT"] 
 
     
-    os.environ["PHOENIX_API_KEY"] = ""#os.environ["PHOENIX_API_KEY"] 
+    #os.environ["PHOENIX_API_KEY"] = "" #os.environ["PHOENIX_API_KEY"] 
 
     
-    os.environ["OPENAI_API_KEY"] = ""#os.environ["OPENAI_API_KEY"] 
+    #os.environ["OPENAI_API_KEY"] = "" #os.environ["OPENAI_API_KEY"] 
 
     # Register the tracer for the project
     tracer_provider = register(
