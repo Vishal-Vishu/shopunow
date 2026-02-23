@@ -26,8 +26,9 @@ class GradeAnswer(BaseModel):
     """Score the quality of the generated answer."""
     faithfulness_score: int = Field(description="Score 1-5: 1 is hallucinated, 5 is fully grounded.")
     relevance_score: int = Field(description="Score 1-5: 1 is off-topic, 5 is perfectly relevant.")
-    is_satisfactory: bool = Field(description="True if both scores are >= 4.")
-    improvement_feedback: str = Field(description="Critique of what is missing or wrong.")
+    #is_satisfactory: bool = Field(description="True if both scores are >= 4.")
+    #improvement_feedback: str = Field(description="Critique of what is missing or wrong.")
+    node_name: str = Field(description="Name of the node being executed")
 
 import logging
 from langchain_core.callbacks import BaseCallbackHandler

@@ -4,6 +4,7 @@ from multimodalprocessor import process_uploaded_file
 from memory import get_user_history, append_user_history
 from support_db import save_support_ticket
 from config import GraphBusinessLogger
+import asyncio
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -181,7 +182,7 @@ Please consider both while responding.
     # ======================================================
 
     with st.spinner("Thinking..."):
-        result = graph.invoke({
+        result = asyncio.run(graph.ainvoke({
             "query": combined_query,
             "phone": phone,
             "history": st.session_state.chat_history,
@@ -190,7 +191,7 @@ Please consider both while responding.
             "responses": [],
             "final_response": None,
             "escalation_required": False
-        }, config={"callbacks": [GraphBusinessLogger()]})
+        }, config={"callbacks": [GraphBusinessLogger()]}))
 
     final_response = result.get("final_response")
     escalation_required = result.get("escalation_required", False)

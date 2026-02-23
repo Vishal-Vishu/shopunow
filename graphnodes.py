@@ -71,7 +71,8 @@ def guardrail_node(state: ShopState):
         if keyword in query:
             return {
                 "out_of_scope": False,
-                "guardrail_reason": "Matched known taxonomy keyword."
+                "guardrail_reason": "Matched known taxonomy keyword.",
+                "node_name": "Guard Rail Node"
             }    
 
     # -----------------------------------------
@@ -123,7 +124,8 @@ Return structured output only.
 
     return {
         "out_of_scope": result.out_of_scope,
-        "guardrail_reason": result.reason
+        "guardrail_reason": result.reason,
+        "node_name": "rewrite node"
     }    
 
 def rewrite_node(state: ShopState):
@@ -281,8 +283,8 @@ def build_conversation_context(state: ShopState, max_turns: int = 2):
 
     print("Conversation context finished=", final_context)
 
-    return {final_context.strip()
-            }
+    return final_context.strip()
+            
 
 
 
@@ -582,7 +584,90 @@ def escalation_node(state: ShopState):
 
     return {"final_response": response}
 
-def department_execution_node(state: ShopState):
+import asyncio
+from agents import AGENT_MAP
+
+async def execute_single_department(dept, latest_query, context, vectorstore, bm25_retriever):
+    """
+    Helper coroutine to handle RAG and LLM generation for one specific department.
+    """
+    # 1. Retrieval (If retrieve_docs is synchronous, it's fine to call here, 
+    # but the LLM call below will be awaited asynchronously)
+    docs = retrieve_docs(
+        query=latest_query,
+        department=dept,
+        vector_store=vectorstore,
+        bm25_retriever=bm25_retriever
+    )
+
+    if not docs:
+        print(f"[System Failure] No RAG docs for {dept}")
+        return None
+
+    # Use ANSWERS from metadata
+    rag_context = "\n\n".join([doc.metadata.get("answer", "") for doc in docs])
+
+    if not rag_context.strip():
+        return None
+
+    llm, prompt = AGENT_MAP[dept]
+
+    enhanced_query = f"""
+PRIMARY TASK: Answer the following user query: {latest_query}
+---
+KNOWLEDGE BASE: {rag_context}
+CONTEXT INFO: {context}
+---
+INSTRUCTIONS:
+- Base answer strictly on knowledge base using {dept} persona.
+- If no info exists, say: "This information is not available in our records."
+"""
+
+    # 2. Async LLM Call: using .ainvoke instead of .invoke
+    chain = prompt | llm
+    result = await chain.ainvoke({"query": enhanced_query})
+
+    if "not available in our records" in result.content:
+        print(f"⚠️ [System Failure] LLM confirmed no info for {dept}")
+        return None
+        
+    return result.content
+
+async def department_execution_node(state: ShopState):
+    print(f"Department Execution started with query == {state.query}")
+
+    context = build_conversation_context(state)
+    vectorstore = get_vector_store()
+    latest_query = state.optimized_query or state.query
+
+    # 3. Create tasks for all identified departments
+    tasks = [
+        execute_single_department(dept, latest_query, context, vectorstore, bm25_retriever)
+        for dept in state.departments
+    ]
+
+    # 4. Execute all departments concurrently
+    results = await asyncio.gather(*tasks)
+
+    # Filter out None values from failed retrievals or records not found
+    responses = [res for res in results if res is not None]
+
+    if not responses:
+        return {
+            "responses": ["I'm sorry, I couldn't find any specific information regarding that in our ShopUNow records."],
+            "rag_docs_found": False,
+            "turn_type": "knowledge_gap",
+            "node_name": "Department Execution"
+        }
+
+    return {
+        "responses": responses,
+        "rag_docs_found": True,
+        "turn_type": "success",
+        "node_name": "Department Execution"
+    }
+
+def department_execution_node1(state: ShopState):
 
     print("Department Execution started with query == ", {state.query})
 
@@ -665,7 +750,7 @@ INSTRUCTIONS:
             "responses": ["I'm sorry, I couldn't find any specific information regarding that in our ShopUNow records."],
             "rag_docs_found": False,
             "turn_type": "knowledge_gap",
-            "node_name": "Department Execution"
+            "node_name": "execute_departments"
 
         }
 
@@ -673,7 +758,7 @@ INSTRUCTIONS:
         "responses": responses,
         "rag_docs_found": True,
         "turn_type": "success",
-        "node_name": "Department Execution"
+        "node_name": "execute_departments"
     }
 
 
@@ -691,7 +776,7 @@ def response_enrichment_node(state):
 
     # If only one response, no need to enrich
     if len(responses) <= 1:
-        return {"final_response": responses[0] if responses else ""}
+        return {"final_response": responses[0] if responses else "", "node_name":"Final Response"}
 
     llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.3)
 
@@ -725,7 +810,8 @@ def guardrail_block_node(state: ShopState):
         print("Guard Rail block executed")
         return {
             "final_response": "⚠️ Your query is outside the supported scope of this assistant. Please ask about ShopUNow services.",
-            "escalation_required": False
+            "escalation_required": False,
+            "node_name": "Guard Rail Block node"
         }
 
 def response_scorer_node(state: ShopState):
@@ -745,7 +831,7 @@ def response_scorer_node(state: ShopState):
     llm = ChatOpenAI(
         model="gpt-4o-mini",
         temperature=0
-    ).with_structured_output(ResponseEvaluation)
+    )
 
     prompt = ChatPromptTemplate.from_messages([
         ("system", """
@@ -836,28 +922,18 @@ def answer_grader_node(state: ShopState):
         ("system", system_prompt),
         ("human", f"QUERY: {state.query}\n\nANSWER: {current_answer}")
     ])
+
+    result_dict = result.model_dump() 
     
     print(f"Scores -> Faith: {result.faithfulness_score}, Rel: {result.relevance_score}")
     
     return {
-        "is_satisfactory": result.is_satisfactory,
-        "improvement_feedback": result.improvement_feedback,
-        "faithfulness_score": result.faithfulness_score,
-        "relevance_score": result.relevance_score
+    #"is_satisfactory": result_dict["is_satisfactory"],
+    #"improvement_feedback": result_dict["improvement_feedback"],
+    "faithfulness_score": result_dict["faithfulness_score"],
+    "relevance_score": result_dict["relevance_score"],
+    "node_name": "Answer Scorer Node"
     }
-
-def logger_node(state: ShopState):
-    """
-    Centralized observer that tracks the current state after any functional node execution.
-    """
-    current_node = state.get("current_step", "unknown")
-    print(f"📊 [TRACE] Completed: {current_node}")
-    print(f"   Query: {state.query}")
-    print(f"   Departments: {state.departments}")
-    print(f"   RAG Found: {state.rag_docs_found}")
-    
-    # We return an empty dict because we are just observing, not changing state
-    return {}    
 
 import logging
 
