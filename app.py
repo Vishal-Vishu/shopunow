@@ -146,7 +146,7 @@ uploaded_file = st.file_uploader(
 # ==========================================================
 
 user_query = st.chat_input("Type your message here...")
-
+combined_query = ""
 
 if user_query:
 
@@ -180,6 +180,8 @@ Please consider both while responding.
     # ======================================================
     # Invoke LangGraph
     # ======================================================
+
+    print("Combined query ==", combined_query)
 
     with st.spinner("Thinking..."):
         result = asyncio.run(graph.ainvoke({

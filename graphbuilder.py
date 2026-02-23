@@ -35,7 +35,7 @@ def build_graph():
 
     
 
-    graph.add_node("preprocess", preprocess_node)              # Non-LLM safety + init
+   # graph.add_node("preprocess", preprocess_node)              # Non-LLM safety + init
     graph.add_node("rewrite", rewrite_node)                    # LLM normalization
     graph.add_node("guardrail", guardrail_node)                # Semantic safety check
     graph.add_node("guardrail_block", guardrail_block_node)    # Block response
@@ -51,13 +51,13 @@ def build_graph():
     # ENTRY POINT
     # ==========================================================
 
-    graph.set_entry_point("preprocess")
+    graph.set_entry_point("rewrite")
 
     # ==========================================================
     # PREPROCESS → REWRITE
     # ==========================================================
 
-    graph.add_edge("preprocess", "rewrite")
+    #graph.add_edge("preprocess", "rewrite")
 
     # ==========================================================
     # REWRITE → GUARDRAIL

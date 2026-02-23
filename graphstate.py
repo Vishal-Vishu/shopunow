@@ -9,7 +9,7 @@ class ConversationItem(BaseModel):
 
 class ShopState(BaseModel):
     # Required
-    query: str = Field(..., description="User query")
+    query: str = Field(default="", description="User query")
 
     # Optional
     phone: Optional[str] = ""
