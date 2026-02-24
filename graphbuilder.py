@@ -46,7 +46,7 @@ def build_graph():
     #graph.add_node("merge", merge_node)
     graph.add_node("response_enrichment", response_enrichment_node)
     graph.add_node("escalation", escalation_node)
-    graph.add_node("answer_grader", answer_grader_node)
+  #  graph.add_node("answer_grader", answer_grader_node)
     graph.add_node("topic_shift", topic_shift_node)
     graph.add_node("clarification", clarification_node)
 
@@ -172,13 +172,13 @@ def build_graph():
     # ==========================================================
 
     graph.add_edge("execute_departments", "response_enrichment")
-    graph.add_edge("response_enrichment", "answer_grader")
+    #graph.add_edge("response_enrichment", "answer_grader")
 
     # ==========================================================
     # TERMINAL STATES
     # ==========================================================
 
-    graph.add_edge("answer_grader", END)
+    graph.add_edge("response_enrichment", END)
     graph.add_edge("guardrail_block", END)
     graph.add_edge("escalation", END)
 
