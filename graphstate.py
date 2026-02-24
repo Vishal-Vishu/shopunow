@@ -6,6 +6,24 @@ class ConversationItem(BaseModel):
     query: str = ""
     response: str = ""
 
+from typing import Literal
+
+class AffectiveOutput(BaseModel):
+    sentiment: Literal["positive", "neutral", "negative"]
+    emotion: Literal[
+        "anger",
+        "frustration",
+        "confusion",
+        "fear",
+        "sadness",
+        "disappointment",
+        "neutral",
+        "satisfaction",
+        "gratitude"
+    ]
+    emotion_intensity: float
+    requires_escalation: bool
+
 
 class ShopState(BaseModel):
     # Required
@@ -40,7 +58,12 @@ class ShopState(BaseModel):
     relevance_score: int = 0
     improvement_feedback: Optional[str] = ""
 
-    node_name: Optional[str] = None
+    node_name: Optional[str] = ""
+
+    sentiment: Optional[str] = None
+    emotion: Optional[str] = None
+    emotion_intensity: Optional[float] = None
+    escalation_required: Optional[bool] = None
 
     
 

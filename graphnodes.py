@@ -16,6 +16,8 @@ from pydantic import BaseModel
 from config import DepartmentRouting, GradeAnswer, CATEGORY_MAP
 from opentelemetry import trace
 
+from graphstate import AffectiveOutput
+
 
 
 bm25_retriever = BM25Retriever("shopunow_faq_dataset.json")
@@ -111,6 +113,16 @@ Examples of out_of_scope:
 - Hacking
 - Religion
 - Personal relationship advice
+         
+IMPORTANT:
+- Customer complaints or criticism about products/services are IN-SCOPE.
+- Negative feedback is NOT out_of_scope.
+- Emotional language alone does NOT make it out_of_scope.
+
+Only mark out_of_scope = true if the topic is completely unrelated
+to ShopUNow business operations.
+
+When unsure mark out_of_scope = false                  
 
 Return structured output only.
 """),
@@ -289,7 +301,7 @@ def build_conversation_context(state: ShopState, max_turns: int = 2):
     return final_context.strip()
             
 
-def sentiment_node_future_node(state: ShopState):
+def sentiment_node(state: ShopState):
 
     print("Affective Analysis Node Activated")
 
@@ -358,7 +370,7 @@ Return structured output only.
         }
 
 
-def sentiment_node(state: ShopState):
+def sentiment_node_old(state: ShopState):
 
     print("Detecting sentiment")
 
@@ -657,7 +669,7 @@ def escalation_node(state: ShopState):
 
 
 
-async def execute_single_department(dept, latest_query, context, vectorstore, bm25_retriever):
+async def execute_single_department(dept, latest_query, context, vectorstore, bm25_retriever, state):
     """
     Helper coroutine to handle RAG and LLM generation for one specific department.
     """
@@ -682,7 +694,14 @@ async def execute_single_department(dept, latest_query, context, vectorstore, bm
 
     llm, prompt = AGENT_MAP[dept]
 
-    
+    tone_instruction = ""
+
+    if state.emotion in ["anger", "frustration"]:
+        tone_instruction = "Respond in a calm, empathetic and apologetic tone."
+    elif state.emotion == "confusion":
+        tone_instruction = "Respond clearly with step-by-step explanation."
+    elif state.emotion == "fear":
+        tone_instruction = "Respond in a reassuring and confident tone."
 
 
     enhanced_query = f"""
@@ -694,6 +713,7 @@ CONTEXT INFO: {context}
 INSTRUCTIONS:
 - Base answer strictly on knowledge base using {dept} persona.
 - If no info exists, say: "This information is not available in our records."
+- {tone_instruction}
 """
 
     # 2. Async LLM Call: using .ainvoke instead of .invoke
@@ -715,7 +735,7 @@ async def department_execution_node(state: ShopState):
 
     # 3. Create tasks for all identified departments
     tasks = [
-        execute_single_department(dept, latest_query, context, vectorstore, bm25_retriever)
+        execute_single_department(dept, latest_query, context, vectorstore, bm25_retriever, state)
         for dept in state.departments
     ]
 

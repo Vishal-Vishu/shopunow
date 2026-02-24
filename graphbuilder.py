@@ -93,11 +93,30 @@ def build_graph():
 
     def sentiment_router(state: ShopState):
         """
-        If strong negative sentiment → escalate.
-        Otherwise continue to department detection.
+        Emotion-aware routing logic.
         """
+
+        # Safety fallback
+        emotion = state.emotion or "neutral"
+        intensity = state.emotion_intensity or 0.0
+
+        # 1️⃣ Immediate escalation conditions
         if state.escalation_required:
             return "escalation"
+
+        # 2️⃣ Strong anger → escalate
+        if emotion == "anger" and intensity > 0.7:
+            return "escalation"
+
+        # 3️⃣ Fear → escalate (trust risk)
+        if emotion == "fear" and intensity > 0.6:
+            return "escalation"
+
+        # 4️⃣ Sadness or disappointment → allow department handling
+        # but with emotional tone injection (already implemented)
+
+        # 5️⃣ Confusion → continue to department (likely needs explanation)
+
         return "department"
 
     graph.add_conditional_edges(
