@@ -34,7 +34,7 @@ class ShopState(BaseModel):
     history: Optional[List[ConversationItem]] = None
 
     # Internal state
-    sentiment: Optional[str] = None
+#    sentiment: Optional[str] = None
     departments: Optional[List[str]] = None
     responses: Optional[List[str]] = None
     final_response: Optional[str] = None

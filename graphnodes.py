@@ -144,28 +144,36 @@ Return structured output only.
 def rewrite_node(state: ShopState):
 
     with tracer.start_as_current_span("rewrite_node"):
+
         print("Rewrite Node")
+
         query = state.query.strip()
         span = trace.get_current_span()
-        
         span.set_attribute("query_used", query)
 
-        print("Query = ", query)
+        # --------------------------------------------------
+        # 1️⃣ Build conversation context
+        # --------------------------------------------------
 
-        # -----------------------------------------
-        # 1️⃣ Cheap rule check
-        # -----------------------------------------
+        conversation_context = build_conversation_context(state)
 
-        if len(query.split()) > 4 and query.endswith("?"):
-            # No rewrite needed
+        # If no prior history, keep behavior simple
+        has_context = bool(conversation_context.strip())
+
+        # --------------------------------------------------
+        # 2️⃣ Cheap rule check (skip obvious full questions)
+        # --------------------------------------------------
+
+        if len(query.split()) > 6 and query.endswith("?") and not has_context:
             return {
                 "needs_rewrite": False,
-                "optimized_query": state.query
+                "optimized_query": query,
+                "node_name": "rewrite node"
             }
 
-        # -----------------------------------------
-        # 2️⃣ LLM rewrite
-        # -----------------------------------------
+        # --------------------------------------------------
+        # 3️⃣ LLM Rewrite (Context-Aware)
+        # --------------------------------------------------
 
         llm = ChatOpenAI(
             model="gpt-4o-mini",
@@ -174,43 +182,65 @@ def rewrite_node(state: ShopState):
 
         prompt = ChatPromptTemplate.from_messages([
             ("system", """
-    You are a query rewriting assistant for ShopUNow.
+You are a context-aware query rewriting assistant for ShopUNow.
 
-    If the query is:
-    - Short
-    - Ambiguous
-    - Keyword-based
-    - Missing intent
+Your task:
+- Rewrite the CURRENT USER QUERY into a clear, fully-formed question.
+- Use conversation history to resolve ambiguity.
+- Preserve original emotional tone.
+- Do NOT change user intent.
+- Do NOT neutralize complaints.
+- Do NOT invent new information.
 
-    Rewrite it into a clear, fully-formed customer question.
+If the query is already clear and self-contained,
+set needs_rewrite = false.
 
-    Examples:
-    refund details →
-    "What are the details of the refund process?"
+Examples:
 
-    return product →
-    "How can I return a product?"
+History:
+User: I didn't receive my refund.
+Current: why?
+→ "Why have I not received my refund?"
 
-    If the query is already clear and well-formed,
-    set needs_rewrite to false.
+History:
+User: My product is not working.
+Current: return?
+→ "How can I return the product that is not working?"
 
-    Return structured output only.
-    """),
-            ("human", "{query}")
+History:
+User: The product is pathetic.
+Current: still same issue.
+→ "The product is still having the same issue and I am dissatisfied."
+
+Return structured output only.
+"""),
+            ("human", """
+Conversation Context:
+{context}
+
+Current User Query:
+{query}
+""")
         ])
 
         chain = prompt | llm
-        result = chain.invoke({"query": query})
-        print("Query rewriter finished execution")
-        print("Result from query rewriter llm= ",result)
-        span.set_attribute("needs_rewrite",result.needs_rewrite)
-        span.set_attribute("optimized_query",result.rewritten_query)
+
+        result = chain.invoke({
+            "context": conversation_context,
+            "query": query
+        })
+
+        span.set_attribute("needs_rewrite", result.needs_rewrite)
+        span.set_attribute("optimized_query", result.rewritten_query)
+
+        print("Rewrite Result:", result)
+
         return {
             "needs_rewrite": result.needs_rewrite,
-            "optimized_query": result.rewritten_query,
+            "optimized_query": result.rewritten_query if result.needs_rewrite else query,
             "node_name": "rewrite node"
-    }
-
+        }
+    
 def preprocess_node(state):
     print("Preprocess node begins execution")
     conversation_context = ""
@@ -897,7 +927,7 @@ Your task:
         "content": combined_responses
     }).content
 
-    return {"final_response": enriched, "node_name": "Final Response Execution"}
+    return {"final_response": enriched, "node_name": "final_response"}
 
 def guardrail_block_node(state: ShopState):
         print("Guard Rail block executed")
@@ -1025,7 +1055,7 @@ def answer_grader_node(state: ShopState):
     #"improvement_feedback": result_dict["improvement_feedback"],
     "faithfulness_score": result_dict["faithfulness_score"],
     "relevance_score": result_dict["relevance_score"],
-    "node_name": "Answer Scorer Node"
+    "node_name": "answer_grader"
     }
 
 import logging

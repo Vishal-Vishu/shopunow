@@ -161,7 +161,7 @@ def build_graph():
     # TERMINAL STATES
     # ==========================================================
 
-    graph.add_edge("response_enrichment", END)
+    graph.add_edge("answer_grader", END)
     graph.add_edge("guardrail_block", END)
     graph.add_edge("escalation", END)
 
