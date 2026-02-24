@@ -386,8 +386,8 @@ def sentiment_node(state: ShopState):
 
     print("Affective Analysis Node Activated")
 
-    conversation_context = build_conversation_context(state)
-
+    #conversation_context = build_conversation_context(state)
+    conversation_context = state.query
     llm = ChatOpenAI(
         model="gpt-4o-mini",
         temperature=0
@@ -395,9 +395,9 @@ def sentiment_node(state: ShopState):
 
     prompt = ChatPromptTemplate.from_messages([
         ("system", """
-You are an affective analysis engine for ShopUNow.
+You are an sentiment and emotion analysis engine for ShopUNow.
 
-Analyze the user's current emotional state.
+Prioritize the current user query and then give preference to the context
 
 Return:
 
@@ -412,12 +412,36 @@ Return:
    - legal threats
    - emotion_intensity > 0.75 and emotion in [anger, frustration]
 
-Rules:
-- Informational queries are neutral.
-- Asking for help calmly is neutral.
-- Do NOT over-classify as negative.
-- Be conservative and precise.
+CLASSIFICATION RULES:
 
+POSITIVE:
+- Thanking the company → gratitude
+- Expressing appreciation → gratitude
+- Expressing happiness about resolution → satisfaction
+- Saying something works well → satisfaction
+
+NEUTRAL:
+- Pure informational queries
+- Calm help requests
+- Factual statements without emotional tone
+
+NEGATIVE:
+- Complaints
+- Frustration
+- Anger
+- Disappointment
+- Fear
+
+### CLASSIFICATION BIAS RULES ###
+- DO NOT default to Neutral. 
+- If there is even a HINT of frustration (e.g., "still," "yet," "finally," "why"), classify as NEGATIVE/FRUSTRATION.
+- If the user is thanking you, it is ALWAYS POSITIVE/GRATITUDE.
+
+### STEP-BY-STEP ANALYSIS ###
+1. Identify specific "Emotion Keywords" in the text.
+2. If no keywords exist, look for "Hidden Tone" (sarcasm or urgency).
+3. Select the most accurate label (Neutral is a last resort).
+         
 Return structured output only.
 """),
         ("human", "{context}")
@@ -428,13 +452,13 @@ Return structured output only.
     try:
         result = chain.invoke({"context": conversation_context})
 
-        print("Affective Result:", result)
+        affective_data = result.model_dump() if hasattr(result, "model_dump") else result
 
         return {
-            "sentiment": result.sentiment,
-            "emotion": result.emotion,
-            "emotion_intensity": result.emotion_intensity,
-            "escalation_required": result.requires_escalation,
+            "sentiment": affective_data.get("sentiment", "neutral"),
+            "emotion": affective_data.get("emotion", "neutral"),
+            "emotion_intensity": affective_data.get("emotion_intensity", 0.0),
+            "escalation_required": affective_data.get("requires_escalation", False),
             "node_name": "affective node"
         }
 
@@ -808,27 +832,124 @@ INSTRUCTIONS:
     return result.content
 
 async def department_execution_node(state: ShopState):
+    """
+    Executes department logic.
+    - If attachment present + order_id detected + BILLING department → SQL lookup
+    - Else → Normal RAG execution
+    """
+
     print(f"Department Execution started with query == {state.query}")
+
+    from billing_db_tool import extract_order_id, fetch_order_details
 
     context = build_conversation_context(state)
     vectorstore = get_vector_store()
+
     latest_query = state.optimized_query or state.query
 
-    # 3. Create tasks for all identified departments
+    # ==========================================================
+    # 🔥 SQL BILLING TRIGGER (Attachment-Based)
+    # ==========================================================
+
+    order_id = extract_order_id(latest_query)
+
+    if (
+        getattr(state, "has_attachment", False)
+        and order_id
+        and "BILLING" in (state.departments or [])
+    ):
+        print(f"SQL lookup triggered for {order_id}")
+
+        order_data = fetch_order_details(order_id)
+
+        if not order_data:
+            return {
+                "responses": [f"I could not find any record for order {order_id}."],
+                "rag_docs_found": False,
+                "turn_type": "knowledge_gap",
+                "node_name": "SQL Billing Lookup"
+            }
+
+        order = order_data["order"]
+        items = order_data["items"]
+
+        # -------------------------
+        # Format Order Details
+        # -------------------------
+
+        order_summary = f"""
+Order ID: {order[0]}
+Order Date: {order[2]}
+Payment Mode: {order[3]}
+Subtotal: ₹{order[4]}
+Tax: ₹{order[5]}
+Discount: ₹{order[6]}
+Total Paid: ₹{order[7]}
+"""
+
+        item_details = "\n".join([
+            f"- {item[0]} | Category: {item[1]} | Qty: {item[2]} | "
+            f"Unit Price: ₹{item[3]} | Warranty: {item[4]} months"
+            for item in items
+        ])
+
+        sql_context = f"""
+Here are the details from your uploaded bill:
+
+{order_summary}
+
+Items Purchased:
+{item_details}
+"""
+
+        # Optional: Emotion-aware tone injection
+        if state.emotion in ["anger", "frustration"]:
+            sql_context = "I understand your concern. Here are the details:\n\n" + sql_context
+        elif state.emotion == "confusion":
+            sql_context = "Let me explain your bill clearly:\n\n" + sql_context
+
+        return {
+            "responses": [sql_context.strip()],
+            "rag_docs_found": True,
+            "turn_type": "success",
+            "node_name": "SQL Billing Lookup"
+        }
+
+    # ==========================================================
+    # 🧠 NORMAL RAG FLOW (Non-Attachment or Non-Billing)
+    # ==========================================================
+
+    print("Proceeding with normal RAG execution")
+
     tasks = [
-        execute_single_department(dept, latest_query, context, vectorstore, bm25_retriever, state)
-        for dept in state.departments
+        execute_single_department(
+            dept,
+            latest_query,
+            context,
+            vectorstore,
+            bm25_retriever,
+            state
+        )
+        for dept in (state.departments or [])
     ]
 
-    # 4. Execute all departments concurrently
+    if not tasks:
+        return {
+            "responses": ["I'm not sure which department should handle this request."],
+            "rag_docs_found": False,
+            "turn_type": "knowledge_gap",
+            "node_name": "Department Execution"
+        }
+
     results = await asyncio.gather(*tasks)
 
-    # Filter out None values from failed retrievals or records not found
     responses = [res for res in results if res is not None]
 
     if not responses:
         return {
-            "responses": ["I'm sorry, I couldn't find any specific information regarding that in our ShopUNow records."],
+            "responses": [
+                "I'm sorry, I couldn't find any specific information regarding that in our ShopUNow records."
+            ],
             "rag_docs_found": False,
             "turn_type": "knowledge_gap",
             "node_name": "Department Execution"

@@ -6,12 +6,36 @@ import uvicorn
 from graphbuilder import build_graph
 from multimodalprocessor import process_uploaded_file
 
+from langgraph.graph import StateGraph, END
+from graphbuilder import build_graph
+
+from graphbuilder import(
+    sentiment_node
+)
+
+from graphstate import ShopState
+
 # accessing through uvicorn -- uvicorn api:app --host 127.0.0.1 --port 8000
 
 
 # ==========================================================
 # Initialize FastAPI
 # ==========================================================
+
+def build_affective_graph():
+
+    graph = StateGraph(ShopState)
+
+    # Only add sentiment node
+    graph.add_node("sentiment", sentiment_node)
+
+    # Entry point
+    graph.set_entry_point("sentiment")
+
+    # End immediately after
+    graph.add_edge("sentiment", END)
+
+    return graph.compile()
 
 app = FastAPI(
     title="ShopUNow Agentic AI API",
@@ -120,3 +144,37 @@ async def analyze_sentiment(request: ChatRequest):
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
+
+class AffectiveResponse(BaseModel):
+    sentiment: Optional[str] = None
+    emotion: Optional[str] = None
+    emotion_intensity: Optional[float] = None
+    escalation_required: Optional[bool] = None
+
+class AffectiveResponse(BaseModel):
+    sentiment: Optional[str] = None
+    emotion: Optional[str] = None
+    emotion_intensity: Optional[float] = None
+    escalation_required: Optional[bool] = None
+
+@app.post("/analyze-affective", response_model=AffectiveResponse)
+async def analyze_affective(request: ChatRequest):
+
+    
+    affective_graph = build_affective_graph()
+
+    result = await affective_graph.ainvoke({
+        "query": request.query,
+        "history": request.history or [],
+        "sentiment": None,
+        "emotion": None,
+        "emotion_intensity": None,
+        "escalation_required": False
+    })
+
+    return AffectiveResponse(
+        sentiment=result.get("sentiment"),
+        emotion=result.get("emotion"),
+        emotion_intensity=result.get("emotion_intensity"),
+        escalation_required=result.get("escalation_required")
+    )

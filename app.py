@@ -5,6 +5,7 @@ from memory import get_user_history, append_user_history
 from support_db import save_support_ticket
 from config import GraphBusinessLogger
 import asyncio
+import time
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -77,19 +78,6 @@ for item in st.session_state.chat_history:
         st.markdown(item["query"])
     with st.chat_message("assistant"):
         st.markdown(item["response"])
-
-# ==========================================================
-# Reset Button
-# ==========================================================
-
-col1, col2 = st.columns([1, 5])
-with col1:
-    if st.button("🔄 Reset Chat"):
-        st.session_state.chat_history = []
-        st.session_state.escalation_active = False
-        st.session_state.awaiting_clarification = False
-        st.session_state.clarification_context = None
-        st.rerun()
 
 # ==========================================================
 # Escalation Form
@@ -181,6 +169,8 @@ Please consider both while responding.
     # Invoke LangGraph
     # ======================================================
 
+    start_time = time.perf_counter()
+
     with st.spinner("Thinking..."):
         result = asyncio.run(
             graph.ainvoke(
@@ -195,10 +185,16 @@ Please consider both while responding.
                     "escalation_required": st.session_state.escalation_active,
                     "awaiting_clarification": st.session_state.awaiting_clarification,
                     "clarification_context": st.session_state.clarification_context,
-                },
-                config={"callbacks": [GraphBusinessLogger()]}
+                    "has_attachment": bool(uploaded_file),
+                }
             )
         )
+
+        end_time = time.perf_counter()
+
+        total_latency = round(end_time - start_time, 3)   
+
+        print(f"Total time taken - {total_latency} seconds")
 
     final_response = result.get("final_response")
     escalation_required = result.get("escalation_required", False)

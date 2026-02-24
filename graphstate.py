@@ -69,3 +69,5 @@ class ShopState(BaseModel):
     topic_shift_detected: Optional[bool] = False
     awaiting_clarification: Optional[bool] = False
     clarification_context: Optional[dict] = None
+
+    has_attachment: Optional[bool] = False
