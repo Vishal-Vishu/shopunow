@@ -70,8 +70,8 @@ class GraphBusinessLogger(BaseCallbackHandler):
             print(f"   - RAG Success: {outputs.get('rag_docs_found')}")
             
         if node_name == "answer_grader":
-            print(f"   - Satisfactory: {outputs.get('is_satisfactory')}")
-            print(f"   - Feedback: {outputs.get('improvement_feedback')}")
+            print(f"   - Faithfulness Score: {outputs.get('faithfulness_score')}")
+            print(f"   - Relevance Score: {outputs.get('relevance_score')}")
             
 with open("taxonomy_registry.json", "r") as f:
     TAXONOMY = json.load(f)

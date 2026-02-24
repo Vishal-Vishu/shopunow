@@ -5,14 +5,15 @@ from graphnodes import (
     preprocess_node,
     sentiment_node,
     department_execution_node,
-    merge_node,
     response_enrichment_node,
     escalation_node,
     department_node,
     guardrail_node,
     guardrail_block_node,
     rewrite_node,
-    answer_grader_node
+    answer_grader_node,
+    topic_shift_node,
+    clarification_node
 )
 
 from config import setup_phoenix
@@ -42,10 +43,12 @@ def build_graph():
     graph.add_node("sentiment", sentiment_node)                # Sentiment analysis
     graph.add_node("department", department_node)              # Department routing
     graph.add_node("execute_departments", department_execution_node)
-    graph.add_node("merge", merge_node)
+    #graph.add_node("merge", merge_node)
     graph.add_node("response_enrichment", response_enrichment_node)
     graph.add_node("escalation", escalation_node)
     graph.add_node("answer_grader", answer_grader_node)
+    graph.add_node("topic_shift", topic_shift_node)
+    graph.add_node("clarification", clarification_node)
 
     # ==========================================================
     # ENTRY POINT
@@ -146,6 +149,20 @@ def build_graph():
         department_router_fn,
         {
             "escalation": "escalation",
+            "execute_departments": "topic_shift"
+        }
+    )
+
+    def topic_shift_router(state: ShopState):
+        if state.topic_shift_detected:
+            return "clarification"
+        return "execute_departments"
+
+    graph.add_conditional_edges(
+        "topic_shift",
+        topic_shift_router,
+        {
+            "clarification": "clarification",
             "execute_departments": "execute_departments"
         }
     )

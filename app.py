@@ -5,10 +5,9 @@ from memory import get_user_history, append_user_history
 from support_db import save_support_ticket
 from config import GraphBusinessLogger
 import asyncio
-
 from dotenv import load_dotenv
-load_dotenv()
 
+load_dotenv()
 
 # ==========================================================
 # Page Configuration
@@ -21,7 +20,6 @@ st.set_page_config(
 
 st.title("🛍️ ShopUNow Agentic AI Assistant")
 
-
 # ==========================================================
 # Initialize LangGraph (Only Once)
 # ==========================================================
@@ -31,7 +29,6 @@ def initialize_graph():
     return build_graph()
 
 graph = initialize_graph()
-
 
 # ==========================================================
 # Mobile Login
@@ -43,7 +40,6 @@ if not phone:
     st.warning("Please enter your mobile number to continue.")
     st.stop()
 
-
 # ==========================================================
 # Session State Initialization
 # ==========================================================
@@ -53,12 +49,22 @@ if "loaded_phone" not in st.session_state or st.session_state.loaded_phone != ph
     st.session_state.chat_history = get_user_history(phone)
     st.session_state.escalation_active = False
 
+    # 🔥 Reset clarification state for new user
+    st.session_state.awaiting_clarification = False
+    st.session_state.clarification_context = None
+
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
 if "escalation_active" not in st.session_state:
     st.session_state.escalation_active = False
 
+# 🔥 Clarification State
+if "awaiting_clarification" not in st.session_state:
+    st.session_state.awaiting_clarification = False
+
+if "clarification_context" not in st.session_state:
+    st.session_state.clarification_context = None
 
 # ==========================================================
 # Display Previous Conversations
@@ -72,7 +78,6 @@ for item in st.session_state.chat_history:
     with st.chat_message("assistant"):
         st.markdown(item["response"])
 
-
 # ==========================================================
 # Reset Button
 # ==========================================================
@@ -82,8 +87,9 @@ with col1:
     if st.button("🔄 Reset Chat"):
         st.session_state.chat_history = []
         st.session_state.escalation_active = False
+        st.session_state.awaiting_clarification = False
+        st.session_state.clarification_context = None
         st.rerun()
-
 
 # ==========================================================
 # Escalation Form
@@ -127,7 +133,6 @@ if st.session_state.escalation_active:
 
     st.stop()
 
-
 # ==========================================================
 # Multimodal File Upload
 # ==========================================================
@@ -136,7 +141,6 @@ uploaded_file = st.file_uploader(
     "📎 Upload bill / receipt / image / document (optional)",
     type=["png", "jpg", "jpeg", "pdf", "docx"]
 )
-
 
 # ==========================================================
 # Chat Input
@@ -147,7 +151,6 @@ combined_query = ""
 
 if user_query:
 
-    # Display user message immediately
     with st.chat_message("user"):
         st.markdown(user_query)
 
@@ -179,19 +182,36 @@ Please consider both while responding.
     # ======================================================
 
     with st.spinner("Thinking..."):
-        result = asyncio.run(graph.ainvoke({
-            "query": combined_query,
-            "phone": phone,
-            "history": st.session_state.chat_history,
-            "sentiment": None,
-            "departments": None,
-            "responses": [],
-            "final_response": None,
-            "escalation_required": False
-        }, config={"callbacks": [GraphBusinessLogger()]}))
+        result = asyncio.run(
+            graph.ainvoke(
+                {
+                    "query": combined_query,
+                    "phone": phone,
+                    "history": st.session_state.chat_history,
+                    "sentiment": None,
+                    "departments": None,
+                    "responses": [],
+                    "final_response": None,
+                    "escalation_required": st.session_state.escalation_active,
+                    "awaiting_clarification": st.session_state.awaiting_clarification,
+                    "clarification_context": st.session_state.clarification_context,
+                },
+                config={"callbacks": [GraphBusinessLogger()]}
+            )
+        )
 
     final_response = result.get("final_response")
     escalation_required = result.get("escalation_required", False)
+
+    # 🔥 Persist Clarification State
+    st.session_state.awaiting_clarification = result.get(
+        "awaiting_clarification",
+        False
+    )
+
+    st.session_state.clarification_context = result.get(
+        "clarification_context"
+    )
 
     if not final_response:
         final_response = "⚠️ Sorry, no response was generated."
@@ -221,8 +241,11 @@ Please consider both while responding.
     with st.chat_message("assistant"):
         st.markdown(final_response)
 
+    # 🔥 Use resolved query if rewrite replaced it
+    resolved_query = result.get("query", user_query)
+
     new_entry = {
-        "query": user_query,
+        "query": resolved_query,
         "response": final_response
     }
 

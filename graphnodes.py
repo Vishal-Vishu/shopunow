@@ -43,9 +43,11 @@ class RewriteOutput(BaseModel):
 
 def guardrail_node(state: ShopState):
 
-    print("Guard Rail node activated")
+    print("Guard Rail node started")
 
-    query = normalize(state.query)
+    effective_query = state.optimized_query or state.query
+
+    query = normalize(effective_query)
 
     # -----------------------------------------
     # 1️⃣ Rule-Based Injection Detection
@@ -118,6 +120,15 @@ IMPORTANT:
 - Customer complaints or criticism about products/services are IN-SCOPE.
 - Negative feedback is NOT out_of_scope.
 - Emotional language alone does NOT make it out_of_scope.
+- If the current query is vague, incomplete, or depends on previous conversation,
+you MUST expand it into a fully self-contained question using conversation context.
+
+Example:
+
+History:
+User: refund details
+Current: where can I check
+→ "Where can I check the status of my refund?"         
 
 Only mark out_of_scope = true if the topic is completely unrelated
 to ShopUNow business operations.
@@ -145,26 +156,83 @@ def rewrite_node(state: ShopState):
 
     with tracer.start_as_current_span("rewrite_node"):
 
+        span = trace.get_current_span()
+
+        # ==================================================
+        # 1️⃣ Clarification Handling (INTERCEPT EARLY)
+        # ==================================================
+
+        if state.awaiting_clarification:
+
+            print("Handling clarification response")
+
+            user_reply = state.query.lower().strip()
+
+            clarification_ctx = state.clarification_context or {}
+            previous_query = clarification_ctx.get("previous_query")
+            new_query = clarification_ctx.get("new_query")
+
+            # ---- Confirm Topic Shift ----
+            if any(word in user_reply for word in ["yes", "yeah", "correct", "right"]):
+
+                print("User confirmed topic shift")
+
+                return {
+                    # 🔥 CRITICAL: Override query itself
+                    "query": new_query,
+                    "optimized_query": new_query,
+                    "awaiting_clarification": False,
+                    "clarification_context": None,
+                    "needs_rewrite": False,
+                    "node_name": "rewrite node"
+                }
+
+            # ---- Reject Topic Shift ----
+            if any(word in user_reply for word in ["no", "not"]):
+
+                print("User rejected topic shift")
+
+                return {
+                    # 🔥 CRITICAL: Revert to previous query
+                    "query": previous_query,
+                    "optimized_query": previous_query,
+                    "awaiting_clarification": False,
+                    "clarification_context": None,
+                    "needs_rewrite": False,
+                    "node_name": "rewrite node"
+                }
+
+            # ---- Unclear Confirmation ----
+            print("Unclear clarification response")
+
+            return {
+                "final_response": "Could you please confirm whether you are switching to the new issue?",
+                "awaiting_clarification": True,
+                "node_name": "rewrite node"
+            }
+
+        # ==================================================
+        # 2️⃣ Normal Rewrite Flow
+        # ==================================================
+
         print("Rewrite Node")
 
         query = state.query.strip()
-        span = trace.get_current_span()
         span.set_attribute("query_used", query)
 
         # --------------------------------------------------
-        # 1️⃣ Build conversation context
+        # Build conversation context
         # --------------------------------------------------
 
         conversation_context = build_conversation_context(state)
-
-        # If no prior history, keep behavior simple
         has_context = bool(conversation_context.strip())
 
         # --------------------------------------------------
-        # 2️⃣ Cheap rule check (skip obvious full questions)
+        # Cheap Skip Rule
         # --------------------------------------------------
 
         if len(query.split()) > 6 and query.endswith("?") and not has_context:
+
             return {
                 "needs_rewrite": False,
                 "optimized_query": query,
@@ -172,7 +240,7 @@ def rewrite_node(state: ShopState):
             }
 
         # --------------------------------------------------
-        # 3️⃣ LLM Rewrite (Context-Aware)
+        # Context-Aware LLM Rewrite
         # --------------------------------------------------
 
         llm = ChatOpenAI(
@@ -194,23 +262,6 @@ Your task:
 
 If the query is already clear and self-contained,
 set needs_rewrite = false.
-
-Examples:
-
-History:
-User: I didn't receive my refund.
-Current: why?
-→ "Why have I not received my refund?"
-
-History:
-User: My product is not working.
-Current: return?
-→ "How can I return the product that is not working?"
-
-History:
-User: The product is pathetic.
-Current: still same issue.
-→ "The product is still having the same issue and I am dissatisfied."
 
 Return structured output only.
 """),
@@ -240,7 +291,7 @@ Current User Query:
             "optimized_query": result.rewritten_query if result.needs_rewrite else query,
             "node_name": "rewrite node"
         }
-    
+        
 def preprocess_node(state):
     print("Preprocess node begins execution")
     conversation_context = ""
@@ -1075,3 +1126,77 @@ def logger_node(state: ShopState):
 
     # Return empty dict to keep state unchanged
     return {}
+
+
+def topic_shift_node(state: ShopState):
+
+    print("Topic Shift Detection Node")
+
+    # If we are already waiting for clarification, skip detection
+    if state.awaiting_clarification:
+        return {
+            "topic_shift_detected": False,
+            "node_name": "topic_shift"
+        }
+
+    if not state.history:
+        return {
+            "topic_shift_detected": False,
+            "node_name": "topic_shift"
+        }
+
+    previous_query = state.history[-1].query
+    current_departments = state.departments or []
+
+    if not previous_query or not current_departments:
+        return {
+            "topic_shift_detected": False,
+            "node_name": "topic_shift"
+        }
+
+    # Use your existing taxonomy logic
+    prev_departments = detect_department_from_taxonomy(previous_query)
+
+    if not prev_departments:
+        return {
+            "topic_shift_detected": False,
+            "node_name": "topic_shift"
+        }
+
+    # If departments do not overlap → topic shift
+    if set(prev_departments).isdisjoint(set(current_departments)):
+        print("Topic shift detected.")
+        return {
+            "topic_shift_detected": True,
+            "node_name": "topic_shift"
+        }
+
+    return {
+        "topic_shift_detected": False,
+        "node_name": "topic_shift"
+    }
+
+def clarification_node(state: ShopState):
+
+    print("Clarification Node Activated")
+
+    previous_query = state.history[-1].query if state.history else "previous topic"
+    current_query = state.query
+
+    response = (
+        f"I noticed your previous question was about:\n"
+        f"'{previous_query}'.\n\n"
+        f"Now you mentioned:\n"
+        f"'{current_query}'.\n\n"
+        f"Are you switching to this new issue?"
+    )
+
+    return {
+        "final_response": response,
+        "awaiting_clarification": True,
+        "clarification_context": {
+            "previous_query": previous_query,
+            "new_query": current_query
+        },
+        "node_name": "clarification"
+    }

@@ -65,16 +65,7 @@ class ShopState(BaseModel):
     emotion_intensity: Optional[float] = None
     escalation_required: Optional[bool] = None
 
-    
-
-    @field_validator("history", mode="before")
-    def default_history(cls, v):
-        return v or []
-
-    @field_validator("departments", mode="before")
-    def default_departments(cls, v):
-        return v or []
-
-    @field_validator("responses", mode="before")
-    def default_responses(cls, v):
-        return v or []
+    # Conversation Intelligence
+    topic_shift_detected: Optional[bool] = False
+    awaiting_clarification: Optional[bool] = False
+    clarification_context: Optional[dict] = None
