@@ -811,20 +811,33 @@ async def execute_single_department(dept, latest_query, context, vectorstore, bm
 
     enhanced_query = f"""
 PRIMARY TASK: Answer the following user query: {latest_query}
+Answer the following user query:
+
+{latest_query}
+
 ---
-KNOWLEDGE BASE: {rag_context}
-CONTEXT INFO: {context}
+
+KNOWLEDGE BASE (Authoritative Source):
+{rag_context}
+
 ---
+
 INSTRUCTIONS:
-- Base answer strictly on knowledge base using {dept} persona.
-- If no info exists, say: "This information is not available in our records."
-- {tone_instruction}
+- Base your answer strictly on the provided knowledge base, but use the persona of the detected department to answer the query.
+- You may paraphrase and synthesize the information.
+- Do NOT introduce facts not present in the knowledge base.
+- Use Context Info for your understanding of the conversation and not as replacement of KNOWLEDGE BASE
+- If no relevant information exists, say:
+  "This information is not available in our records."
+- Respond professionally.
+
 """
 
     # 2. Async LLM Call: using .ainvoke instead of .invoke
     chain = prompt | llm
     result = await chain.ainvoke({"query": enhanced_query})
 
+   
     if "not available in our records" in result.content:
         print(f"⚠️ [System Failure] LLM confirmed no info for {dept}")
         return None
