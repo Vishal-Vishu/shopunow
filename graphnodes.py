@@ -176,7 +176,8 @@ def rewrite_node(state: ShopState):
             if any(word in user_reply for word in ["yes", "yeah", "correct", "right"]):
 
                 print("User confirmed topic shift")
-
+                span.set_attribute("Optimized Query=",new_query)
+                span.set_attribute("Previous Query = ", previous_query)
                 return {
                     # 🔥 CRITICAL: Override query itself
                     "query": new_query,
@@ -259,6 +260,7 @@ Your task:
 - Do NOT change user intent.
 - Do NOT neutralize complaints.
 - Do NOT invent new information.
+- If the CURRENT USER QUERY is random word which doesnt have a proper meaning set needs_rewrite = false             
 
 If the query is already clear and self-contained,
 set needs_rewrite = false.
@@ -823,7 +825,7 @@ KNOWLEDGE BASE (Authoritative Source):
 ---
 
 INSTRUCTIONS:
-- Base your answer strictly on the provided knowledge base, but use the persona of the detected department to answer the query.
+- Base your answer strictly on the provided knowledge base, but use the persona of the detected department {dept} to answer the query.
 - You may paraphrase and synthesize the information.
 - Do NOT introduce facts not present in the knowledge base.
 - Use Context Info for your understanding of the conversation and not as replacement of KNOWLEDGE BASE
