@@ -1,12 +1,21 @@
 import streamlit as st
-from graphbuilder import build_graph
-from multimodalprocessor import process_uploaded_file
-from memory import get_user_history, append_user_history
-from support_db import save_support_ticket
-from config import GraphBusinessLogger
 import asyncio
 import time
 from dotenv import load_dotenv
+
+from graphbuilder import build_graph
+from multimodalprocessor import process_uploaded_file
+from memory import get_user_history, append_user_history
+from config import GraphBusinessLogger
+
+from support_db import (
+    save_support_ticket,
+    create_user_session,
+    update_session_activity,
+    close_user_session,
+    is_session_expired,
+    cleanup_expired_sessions
+)
 
 load_dotenv()
 
@@ -20,6 +29,12 @@ st.set_page_config(
 )
 
 st.title("🛍️ ShopUNow Agentic AI Assistant")
+
+# ==========================================================
+# Cleanup Expired Sessions On App Load
+# ==========================================================
+
+cleanup_expired_sessions(timeout_minutes=30)
 
 # ==========================================================
 # Initialize LangGraph (Only Once)
@@ -42,6 +57,41 @@ if not phone:
     st.stop()
 
 # ==========================================================
+# SESSION MANAGEMENT
+# ==========================================================
+
+# Create session immediately after phone entry
+if "session_id" not in st.session_state:
+
+    session_id = create_user_session(phone)
+
+    st.session_state.session_id = session_id
+    st.session_state.session_phone = phone
+    st.session_state.session_start_time = time.time()
+
+# If phone changes → close old session & create new one
+if (
+    "session_phone" in st.session_state
+    and st.session_state.session_phone != phone
+):
+    close_user_session(st.session_state.session_id)
+
+    new_session_id = create_user_session(phone)
+
+    st.session_state.session_id = new_session_id
+    st.session_state.session_phone = phone
+    st.session_state.session_start_time = time.time()
+
+# Check inactivity timeout (30 mins)
+if is_session_expired(st.session_state.session_id, timeout_minutes=30):
+
+    close_user_session(st.session_state.session_id)
+
+    st.warning("⏳ Session expired due to inactivity. Please re-login.")
+    st.session_state.clear()
+    st.stop()
+
+# ==========================================================
 # Session State Initialization
 # ==========================================================
 
@@ -50,7 +100,7 @@ if "loaded_phone" not in st.session_state or st.session_state.loaded_phone != ph
     st.session_state.chat_history = get_user_history(phone)
     st.session_state.escalation_active = False
 
-    # 🔥 Reset clarification state for new user
+    # Reset clarification state
     st.session_state.awaiting_clarification = False
     st.session_state.clarification_context = None
 
@@ -60,7 +110,6 @@ if "chat_history" not in st.session_state:
 if "escalation_active" not in st.session_state:
     st.session_state.escalation_active = False
 
-# 🔥 Clarification State
 if "awaiting_clarification" not in st.session_state:
     st.session_state.awaiting_clarification = False
 
@@ -117,6 +166,9 @@ if st.session_state.escalation_active:
                 append_user_history(phone, confirmation_message)
 
                 st.session_state.escalation_active = False
+
+                update_session_activity(st.session_state.session_id)
+
                 st.rerun()
 
     st.stop()
@@ -135,9 +187,11 @@ uploaded_file = st.file_uploader(
 # ==========================================================
 
 user_query = st.chat_input("Type your message here...")
-combined_query = ""
 
 if user_query:
+
+    # Update session activity
+    update_session_activity(st.session_state.session_id)
 
     with st.chat_message("user"):
         st.markdown(user_query)
@@ -177,6 +231,7 @@ Please consider both while responding.
                 {
                     "query": combined_query,
                     "phone": phone,
+                    "session_id": st.session_state.session_id,
                     "history": st.session_state.chat_history,
                     "sentiment": None,
                     "departments": None,
@@ -190,16 +245,13 @@ Please consider both while responding.
             )
         )
 
-        end_time = time.perf_counter()
-
-        total_latency = round(end_time - start_time, 3)   
-
-        print(f"Total time taken - {total_latency} seconds")
+    end_time = time.perf_counter()
+    total_latency = round(end_time - start_time, 3)
+    print(f"Total time taken - {total_latency} seconds")
 
     final_response = result.get("final_response")
     escalation_required = result.get("escalation_required", False)
 
-    # 🔥 Persist Clarification State
     st.session_state.awaiting_clarification = result.get(
         "awaiting_clarification",
         False
@@ -237,7 +289,6 @@ Please consider both while responding.
     with st.chat_message("assistant"):
         st.markdown(final_response)
 
-    # 🔥 Use resolved query if rewrite replaced it
     resolved_query = result.get("query", user_query)
 
     new_entry = {
