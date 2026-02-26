@@ -4,83 +4,141 @@ from typing import Optional, List
 import uvicorn
 
 from graphbuilder import build_graph
+from graphstate import ShopState
 from multimodalprocessor import process_uploaded_file
 
 from langgraph.graph import StateGraph, END
-from graphbuilder import build_graph
 
-from graphbuilder import(
-    sentiment_node
-)
-
-from graphstate import ShopState
-
-# accessing through uvicorn -- uvicorn api:app --host 127.0.0.1 --port 8000
+from graphnodes import (rewrite_node, guardrail_node, guardrail_block_node, department_node,
+                        department_execution_node, response_enrichment_node) 
 
 
 # ==========================================================
 # Initialize FastAPI
 # ==========================================================
 
-def build_affective_graph():
-
-    graph = StateGraph(ShopState)
-
-    # Only add sentiment node
-    graph.add_node("sentiment", sentiment_node)
-
-    # Entry point
-    graph.set_entry_point("sentiment")
-
-    # End immediately after
-    graph.add_edge("sentiment", END)
-
-    return graph.compile()
-
 app = FastAPI(
     title="ShopUNow Agentic AI API",
-    version="1.0.0"
+    version="2.0.0"
 )
 
 graph = build_graph()
 
 
 # ==========================================================
-# Request Schema
+# Request / Response Schemas
 # ==========================================================
+
+class ConversationItem(BaseModel):
+    query: str
+    response: str
+
 
 class ChatRequest(BaseModel):
     query: str
     phone: Optional[str] = ""
-    history: Optional[List[dict]] = []
+    history: Optional[List[ConversationItem]] = []
+    has_attachment: Optional[bool] = False
 
 
 class ChatResponse(BaseModel):
     response: str
+    departments: Optional[List[str]] = None
+    sentiment: Optional[str] = None
+    emotion: Optional[str] = None
+    escalation_required: Optional[bool] = None
+    faithfulness_score: Optional[float] = None
+    relevance_score: Optional[float] = None
+    topic_shift_detected: Optional[bool] = None
+    awaiting_clarification: Optional[bool] = None
 
+def build_guardrail_graph():
+    graph = StateGraph(ShopState)
+
+    graph.add_node("rewrite", rewrite_node)
+    graph.add_node("guardrail", guardrail_node)
+    graph.add_node("guardrail_block", guardrail_block_node)
+
+    graph.set_entry_point("rewrite")
+    graph.add_edge("rewrite", "guardrail")
+
+    graph.add_conditional_edges(
+        "guardrail",
+        lambda state: "guardrail_block" if state.out_of_scope else END,
+        {
+            "guardrail_block": "guardrail_block",
+            END: END
+        }
+    )
+
+    graph.add_edge("guardrail_block", END)
+
+    return graph.compile()    
+
+def build_routing_graph():
+    graph = StateGraph(ShopState)
+
+    graph.add_node("rewrite", rewrite_node)
+    graph.add_node("guardrail", guardrail_node)
+    graph.add_node("department", department_node)
+
+    graph.set_entry_point("rewrite")
+    graph.add_edge("rewrite", "guardrail")
+
+    graph.add_conditional_edges(
+        "guardrail",
+        lambda state: "department" if not state.out_of_scope else END,
+        {
+            "department": "department",
+            END: END
+        }
+    )
+
+    graph.add_edge("department", END)
+
+    return graph.compile()
+
+def build_execution_graph():
+    graph = StateGraph(ShopState)
+
+    graph.add_node("execute_departments", department_execution_node)
+    graph.add_node("response_enrichment", response_enrichment_node)
+
+    graph.set_entry_point("execute_departments")
+    graph.add_edge("execute_departments", "response_enrichment")
+    graph.add_edge("response_enrichment", END)
+
+    return graph.compile()
 
 # ==========================================================
-# Text-Only Endpoint
+# FULL AGENT EXECUTION (ASYNC SAFE)
 # ==========================================================
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest):
-    print("Chat from FASt api")
-    result = graph.invoke({
+
+    result = await graph.ainvoke({
         "query": request.query,
         "phone": request.phone,
         "history": request.history,
-        "sentiment": None,
-        "departments": None,
-        "responses": None,
-        "final_response": None
+        "has_attachment": request.has_attachment
     })
 
-    return ChatResponse(response=result.get("final_response", ""))
+    return ChatResponse(
+        response=result.get("final_response", ""),
+        departments=result.get("departments"),
+        sentiment=result.get("sentiment"),
+        emotion=result.get("emotion"),
+        escalation_required=result.get("escalation_required"),
+        faithfulness_score=result.get("faithfulness_score"),
+        relevance_score=result.get("relevance_score"),
+        topic_shift_detected=result.get("topic_shift_detected"),
+        awaiting_clarification=result.get("awaiting_clarification")
+    )
 
 
 # ==========================================================
-# Multimodal Endpoint
+# MULTIMODAL ENDPOINT (FILE SUPPORT)
 # ==========================================================
 
 @app.post("/chat-with-file", response_model=ChatResponse)
@@ -91,9 +149,11 @@ async def chat_with_file(
 ):
 
     combined_query = query
+    has_attachment = False
 
     if file:
         extracted_text = process_uploaded_file(file.file)
+        has_attachment = True
 
         combined_query = f"""
 User Query:
@@ -103,78 +163,79 @@ Attached Document Content:
 {extracted_text}
 """
 
-    result = graph.invoke({
+    result = await graph.ainvoke({
         "query": combined_query,
         "phone": phone,
         "history": [],
-        "sentiment": None,
-        "departments": None,
-        "responses": None,
-        "final_response": None
+        "has_attachment": has_attachment
     })
 
-    return ChatResponse(response=result.get("final_response", ""))
+    return ChatResponse(
+        response=result.get("final_response", ""),
+        departments=result.get("departments"),
+        sentiment=result.get("sentiment"),
+        emotion=result.get("emotion"),
+        escalation_required=result.get("escalation_required"),
+        faithfulness_score=result.get("faithfulness_score"),
+        relevance_score=result.get("relevance_score"),
+        topic_shift_detected=result.get("topic_shift_detected"),
+        awaiting_clarification=result.get("awaiting_clarification")
+    )
+
+
+# ==========================================================
+# SENTIMENT ONLY
+# ==========================================================
 
 class SentimentResponse(BaseModel):
-    sentiment: Optional[str] = None
+    sentiment: Optional[str]
+    emotion: Optional[str]
+    emotion_intensity: Optional[float]
+    escalation_required: Optional[bool]
 
 
-@app.post("/analyze-sentiment", response_model=SentimentResponse)
-async def analyze_sentiment(request: ChatRequest):
+@app.post("/analyze-affective", response_model=SentimentResponse)
+async def analyze_affective(request: ChatRequest):
 
     result = await graph.ainvoke({
         "query": request.query,
-        "phone": request.phone,
-        "history": request.history,
-        "sentiment": None,
-        "departments": None,
-        "responses": None,
-        "final_response": None
+        "history": request.history or [],
     })
 
     return SentimentResponse(
-        sentiment=result.get("sentiment")
-    )    
-
-
-# ==========================================================
-# Health Check
-# ==========================================================
-
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy"}
-
-class AffectiveResponse(BaseModel):
-    sentiment: Optional[str] = None
-    emotion: Optional[str] = None
-    emotion_intensity: Optional[float] = None
-    escalation_required: Optional[bool] = None
-
-class AffectiveResponse(BaseModel):
-    sentiment: Optional[str] = None
-    emotion: Optional[str] = None
-    emotion_intensity: Optional[float] = None
-    escalation_required: Optional[bool] = None
-
-@app.post("/analyze-affective", response_model=AffectiveResponse)
-async def analyze_affective(request: ChatRequest):
-
-    
-    affective_graph = build_affective_graph()
-
-    result = await affective_graph.ainvoke({
-        "query": request.query,
-        "history": request.history or [],
-        "sentiment": None,
-        "emotion": None,
-        "emotion_intensity": None,
-        "escalation_required": False
-    })
-
-    return AffectiveResponse(
         sentiment=result.get("sentiment"),
         emotion=result.get("emotion"),
         emotion_intensity=result.get("emotion_intensity"),
         escalation_required=result.get("escalation_required")
     )
+
+
+# ==========================================================
+# CLARIFICATION CONTINUATION ENDPOINT
+# ==========================================================
+
+@app.post("/continue")
+async def continue_conversation(request: ChatRequest):
+    """
+    Used when awaiting_clarification = True
+    """
+    result = await graph.ainvoke({
+        "query": request.query,
+        "phone": request.phone,
+        "history": request.history,
+        "awaiting_clarification": True
+    })
+
+    return {
+        "response": result.get("final_response"),
+        "awaiting_clarification": result.get("awaiting_clarification")
+    }
+
+
+# ==========================================================
+# HEALTH CHECK
+# ==========================================================
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy"}
