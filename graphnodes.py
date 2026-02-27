@@ -177,15 +177,8 @@ Return structured output only.
         "node_name": "rewrite node"
     }    
 
-from typing import Literal
 
-class ClarificationIntent(BaseModel):
-    intent: Literal["confirm_shift", "reject_shift", "unclear"]
-
-class RewriteDecision(BaseModel):
-    needs_rewrite: bool
-
-def rewrite_node(state: ShopState):
+def rewrite_node_bkp(state: ShopState):
 
     with tracer.start_as_current_span("rewrite_node"):
 
@@ -328,6 +321,98 @@ Current User Query:
             "node_name": "rewrite node"
         }
 
+from typing import Literal        
+
+class ClarificationIntent(BaseModel):
+    intent: Literal["confirm_shift", "reject_shift", "unclear"]    
+
+def rewrite_node(state: ShopState):
+
+    with tracer.start_as_current_span("rewrite_node"):
+
+        span = trace.get_current_span()
+
+        # ==================================================
+        # 1️⃣ Handle Clarification Responses ONLY
+        # ==================================================
+
+        if state.awaiting_clarification:
+
+            print("Handling clarification response")
+
+            user_reply = state.query.strip()
+
+            clarification_ctx = state.clarification_context or {}
+            previous_query = clarification_ctx.get("previous_query")
+            new_query = clarification_ctx.get("new_query")
+
+            llm = ChatOpenAI(
+                model="gpt-4o-mini",
+                temperature=0
+            ).with_structured_output(ClarificationIntent)
+
+            prompt = ChatPromptTemplate.from_messages([
+                ("system", """
+User was asked whether they are switching to a new issue.
+
+Classify the reply strictly as:
+- confirm_shift
+- reject_shift
+- unclear
+
+Return structured output only.
+"""),
+                ("human", "{reply}")
+            ])
+
+            result = (prompt | llm).invoke({"reply": user_reply})
+            intent = result.intent
+
+            # ---- User CONFIRMED topic shift ----
+            if intent == "confirm_shift":
+                span.set_attribute("clarification_intent", "confirm_shift")
+
+                return {
+                    "query": new_query,
+                    "optimized_query": new_query,
+                    "awaiting_clarification": False,
+                    "clarification_context": None,
+                    "needs_rewrite": False,
+                    "node_name": "rewrite node"
+                }
+
+            # ---- User REJECTED topic shift ----
+            elif intent == "reject_shift":
+                span.set_attribute("clarification_intent", "reject_shift")
+
+                return {
+                    "query": previous_query,
+                    "optimized_query": previous_query,
+                    "awaiting_clarification": False,
+                    "clarification_context": None,
+                    "needs_rewrite": False,
+                    "node_name": "rewrite node"
+                }
+
+            # ---- Still unclear ----
+            else:
+                return {
+                    "final_response": "Could you please confirm whether you are switching to the new issue?",
+                    "awaiting_clarification": True,
+                    "node_name": "rewrite node"
+                }
+
+        # ==================================================
+        # 2️⃣ NORMAL FLOW → NO REWRITE
+        # ==================================================
+
+        print("Rewrite skipped (normal flow)")
+
+        return {
+            "needs_rewrite": False,
+            "optimized_query": state.query,
+            "node_name": "rewrite node"
+        }
             
 def preprocess_node(state):
     print("Preprocess node begins execution")
