@@ -1,25 +1,37 @@
 from typing import List
 from langchain_core.documents import Document
-from pinecone import Pinecone
-from opentelemetry import trace
 from langchain_openai import OpenAIEmbeddings
-from dotenv import load_dotenv
+from langchain_pinecone import PineconeVectorStore
+from pinecone import Pinecone
+from config import PINECONE_API_KEY, PINECONE_INDEX
+from opentelemetry import trace
 
-load_dotenv()
+# ==========================================================
+# Configuration
+# ==========================================================
 
+SIMILARITY_THRESHOLD = 0.50      # Absolute threshold (optional safety)
+TOP_K_RETRIEVE = 6               # Retrieve extra for ranking stability
+TOP_K_USE = 3                    # Final docs passed to LLM
 
-SIMILARITY_THRESHOLD = 0.5
-TOP_K_RETRIEVE = 4
-TOP_K_USE = 3
+# ==========================================================
+# Pinecone Setup
+# ==========================================================
 
-tracer = trace.get_tracer(__name__)
+pc = Pinecone(api_key=PINECONE_API_KEY)
 
 embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
 
-def extract_keywords(query: str):
-    # Simple fast tokenizer (can improve later)
-    return [token.strip().lower() for token in query.split() if len(token) > 2]
+vector_store = PineconeVectorStore(
+    index_name=PINECONE_INDEX,
+    embedding=embeddings
+)
 
+tracer = trace.get_tracer(__name__)
+
+# ==========================================================
+# Hybrid Retrieval
+# ==========================================================
 
 def retrieve_docs(
     query: str,
@@ -27,115 +39,111 @@ def retrieve_docs(
     vector_store,
     bm25_retriever
 ) -> List[Document]:
+    """
+    Stable Hybrid Retrieval:
+    - Pinecone vector similarity search (cosine)
+    - Absolute threshold filtering
+    - Deterministic top-k slicing
+    - Optional BM25 merge
+    - Deduplication
+    - Stable ordering
+    """
 
     with tracer.start_as_current_span("hybrid_retrieval") as span:
 
         span.set_attribute("query", query)
         span.set_attribute("department", department)
 
-        query_embedding = embeddings.embed_query(query)
-
-        index = vector_store._index  # reuse underlying Pinecone index
-
-        query_tokens = extract_keywords(query)
-
-        # -----------------------------------------------------
-        # 1️⃣ Vector Search with Keyword Filter
-        # -----------------------------------------------------
+        # ==========================================================
+        # 1️⃣ Vector Similarity Search (Stable)
+        # ==========================================================
 
         with tracer.start_as_current_span("vector_search") as vspan:
 
-            metadata_filter = {
-                "category": department
-            }
-
-            # Add keyword filter if tokens exist
-            if query_tokens:
-                metadata_filter["keywords"] = {"$in": query_tokens}
-
             try:
-                vector_response = index.query(
-                    vector=query_embedding,
-                    top_k=TOP_K_RETRIEVE,
-                    include_metadata=True,
-                    include_values=False,
-                    filter=metadata_filter
+                vector_results = vector_store.similarity_search_with_score(
+                    query=query,
+                    k=TOP_K_RETRIEVE,
+                    filter={"category": department}
                 )
             except Exception as e:
                 vspan.record_exception(e)
-                vector_response = None
+                return []
 
-            matches = vector_response.get("matches", []) if vector_response else []
+            if not vector_results:
+                vspan.set_attribute("vector_docs_count", 0)
+                vector_docs = []
+            else:
+                # Sort descending by cosine similarity
+                vector_results = sorted(
+                    vector_results,
+                    key=lambda x: x[1],
+                    reverse=True
+                )
 
-            # Fallback to category-only if no keyword matches
-            if not matches:
-                try:
-                    vector_response = index.query(
-                        vector=query_embedding,
-                        top_k=TOP_K_RETRIEVE,
-                        include_metadata=True,
-                        include_values=False,
-                        filter={"category": department}
-                    )
-                    matches = vector_response.get("matches", [])
-                except Exception as e:
-                    vspan.record_exception(e)
-                    matches = []
-
-            vector_docs = []
-
-            if matches:
-                best_score = matches[0]["score"]
+                best_score = vector_results[0][1]
                 vspan.set_attribute("best_vector_score", best_score)
 
-                if best_score >= SIMILARITY_THRESHOLD:
-                    for match in matches:
-                        if match["score"] >= best_score * 0.95:
-                            metadata = match["metadata"]
+                # Absolute threshold (prevents junk matches)
+                filtered = [
+                    (doc, score)
+                    for doc, score in vector_results
+                    if score >= SIMILARITY_THRESHOLD
+                ]
 
-                            vector_docs.append(
-                                Document(
-                                    page_content=metadata.get("text", ""),
-                                    metadata=metadata
-                                )
-                            )
+                # Deterministic top-k selection
+                vector_docs = [
+                    doc for doc, score in filtered[:TOP_K_USE]
+                ]
 
-            vspan.set_attribute("vector_docs_count", len(vector_docs))
+                vspan.set_attribute("vector_docs_count", len(vector_docs))
 
-        # -----------------------------------------------------
-        # 2️⃣ Optimized BM25 Retrieval
-        # -----------------------------------------------------
+        print("=================================================")
+        print("VECTOR DOCS")
+        for d in vector_docs:
+            print("-", d.metadata.get("topic", ""), "|", d.metadata.get("category", ""))
+        print("=================================================")
+
+        # ==========================================================
+        # 2️⃣ BM25 Retrieval (Optional but Stable)
+        # ==========================================================
 
         with tracer.start_as_current_span("bm25_search") as bspan:
 
-            try:
-                bm25_items = bm25_retriever.retrieve(
-                    query=query,
-                    department=department,
-                    top_k=TOP_K_USE
-                )
-            except Exception as e:
-                bspan.record_exception(e)
-                bm25_items = []
+            bm25_docs = []
 
-            bm25_docs = [
-                Document(
-                    page_content=item["question"],
-                    metadata={
-                        "answer": item.get("answer", ""),
-                        "category": item.get("category", ""),
-                        "topic": item.get("topic", ""),
-                        "keywords": item.get("keywords", [])
-                    }
-                )
-                for item in bm25_items
-            ]
+            if bm25_retriever:
+                try:
+                    bm25_items = bm25_retriever.retrieve(
+                        query=query,
+                        department=department,
+                        top_k=TOP_K_USE
+                    )
+                except Exception as e:
+                    bspan.record_exception(e)
+                    bm25_items = []
+
+                for item in bm25_items:
+                    try:
+                        bm25_docs.append(
+                            Document(
+                                page_content=item["question"],
+                                metadata={
+                                    "category": item["category"],
+                                    "answer": item["answer"],
+                                    "topic": item.get("topic", ""),
+                                    "keywords": item.get("keywords", [])
+                                }
+                            )
+                        )
+                    except KeyError:
+                        continue
 
             bspan.set_attribute("bm25_docs_count", len(bm25_docs))
 
-        # -----------------------------------------------------
-        # 3️⃣ Merge & Deduplicate
-        # -----------------------------------------------------
+        # ==========================================================
+        # 3️⃣ Merge & Deduplicate (Stable Ordering)
+        # ==========================================================
 
         combined = vector_docs + bm25_docs
 
@@ -144,10 +152,18 @@ def retrieve_docs(
 
         for doc in combined:
             key = doc.page_content.strip()
+
             if key not in seen:
                 seen.add(key)
                 final_docs.append(doc)
 
         span.set_attribute("final_docs_count", len(final_docs))
 
+        print("=================================================")
+        print("FINAL DOCS USED")
+        for d in final_docs[:TOP_K_USE]:
+            print("-", d.metadata.get("topic", ""), "|", d.metadata.get("category", ""))
+        print("=================================================")
+
+        # Deterministic final slice
         return final_docs[:TOP_K_USE]

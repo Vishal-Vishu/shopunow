@@ -192,46 +192,28 @@ def rewrite_node(state: ShopState):
         span = trace.get_current_span()
 
         # ==================================================
-        # 1️⃣ Clarification Handling (LLM-Based Intent)
+        # 1️⃣ Clarification Handling (INTERCEPT EARLY)
         # ==================================================
 
         if state.awaiting_clarification:
 
             print("Handling clarification response")
 
-            user_reply = state.query.strip()
+            user_reply = state.query.lower().strip()
 
             clarification_ctx = state.clarification_context or {}
             previous_query = clarification_ctx.get("previous_query")
             new_query = clarification_ctx.get("new_query")
 
-            llm = ChatOpenAI(
-                model="gpt-4o-mini",
-                temperature=0
-            ).with_structured_output(ClarificationIntent)
+            # ---- Confirm Topic Shift ----
+            if any(word in user_reply for word in ["yes", "yeah", "correct", "right"]):
 
-            prompt = ChatPromptTemplate.from_messages([
-                ("system", """
-You classify clarification responses.
+                print("User confirmed topic shift")
 
-User was asked to confirm switching to a new issue.
-
-Classify reply as:
-- confirm_shift
-- reject_shift
-- unclear
-
-Return structured output only.
-"""),
-                ("human", "{reply}")
-            ])
-
-            result = (prompt | llm).invoke({"reply": user_reply})
-            intent = result.intent
-
-            if intent == "confirm_shift":
-                span.set_attribute("clarification_intent", "confirm_shift")
+                span.set_attribute("Optimized Query=",new_query)
+                span.set_attribute("Previous Query = ", previous_query)
                 return {
+                    # 🔥 CRITICAL: Override query itself
                     "query": new_query,
                     "optimized_query": new_query,
                     "awaiting_clarification": False,
@@ -240,9 +222,13 @@ Return structured output only.
                     "node_name": "rewrite node"
                 }
 
-            elif intent == "reject_shift":
-                span.set_attribute("clarification_intent", "reject_shift")
+            # ---- Reject Topic Shift ----
+            if any(word in user_reply for word in ["no", "not"]):
+
+                print("User rejected topic shift")
+
                 return {
+                    # 🔥 CRITICAL: Revert to previous query
                     "query": previous_query,
                     "optimized_query": previous_query,
                     "awaiting_clarification": False,
@@ -251,12 +237,14 @@ Return structured output only.
                     "node_name": "rewrite node"
                 }
 
-            else:
-                return {
-                    "final_response": "Could you please confirm whether you are switching to the new issue?",
-                    "awaiting_clarification": True,
-                    "node_name": "rewrite node"
-                }
+            # ---- Unclear Confirmation ----
+            print("Unclear clarification response")
+
+            return {
+                "final_response": "Could you please confirm whether you are switching to the new issue?",
+                "awaiting_clarification": True,
+                "node_name": "rewrite node"
+            }
 
         # ==================================================
         # 2️⃣ Normal Rewrite Flow
@@ -268,73 +256,18 @@ Return structured output only.
         span.set_attribute("query_used", query)
 
         # --------------------------------------------------
-        # Cheap lexical junk filter
-        # --------------------------------------------------
-
-        if is_gibberish(query):
-            return {
-                "needs_rewrite": False,
-                "optimized_query": query,
-                "node_name": "rewrite node"
-            }
-
-        # --------------------------------------------------
         # Build conversation context
         # --------------------------------------------------
 
         conversation_context = build_conversation_context(state)
+        has_context = bool(conversation_context.strip())
 
         # --------------------------------------------------
-        # Semantic Rewrite Decision (LLM)
+        # Cheap Skip Rule
         # --------------------------------------------------
 
-        decision_llm = ChatOpenAI(
-            model="gpt-4o-mini",
-            temperature=0
-        ).with_structured_output(RewriteDecision)
+        if len(query.split()) > 3 and query.endswith("?") and not has_context:
 
-        decision_prompt = ChatPromptTemplate.from_messages([
-            ("system", """
-You are a strict rewrite decision classifier.
-
-Set needs_rewrite = true ONLY if the query:
-
-1. Cannot be understood without previous conversation
-2. Is grammatically broken or incomplete
-3. Is clearly ambiguous (e.g., "where can I check?")
-4. Is a fragment lacking key subject or object
-
-DO NOT rewrite:
-- Clear full questions
-- Properly formed sentences
-- Questions ending with ?
-- Queries that are already self-contained
-- Queries that are emotionally charged but grammatically correct
-
-Cosmetic improvements are NOT allowed.
-
-If the meaning is already clear, set needs_rewrite = false.
-
-Be conservative.
-
-Return structured output only.
-"""),
-            ("human", """
-Conversation Context:
-{context}
-
-Current Query:
-{query}
-""")
-        ])
-
-        decision = (decision_prompt | decision_llm).invoke({
-            "context": conversation_context,
-            "query": query
-        })
-
-        if not decision.needs_rewrite:
-            span.set_attribute("needs_rewrite", False)
             return {
                 "needs_rewrite": False,
                 "optimized_query": query,
@@ -342,15 +275,15 @@ Current Query:
             }
 
         # --------------------------------------------------
-        # Context-Aware Rewrite (LLM)
+        # Context-Aware LLM Rewrite
         # --------------------------------------------------
 
-        rewrite_llm = ChatOpenAI(
+        llm = ChatOpenAI(
             model="gpt-4o-mini",
             temperature=0
         ).with_structured_output(RewriteOutput)
 
-        rewrite_prompt = ChatPromptTemplate.from_messages([
+        prompt = ChatPromptTemplate.from_messages([
             ("system", """
 You are a context-aware query rewriting assistant for ShopUNow.
 
@@ -364,39 +297,37 @@ Your task:
 - If the CURRENT USER QUERY is random word which doesnt have a proper meaning set needs_rewrite = false             
 
 If the query is already clear and self-contained,
-Be conservative.
+set needs_rewrite = false.
 
-Return structured output only
+Return structured output only.
 """),
             ("human", """
 Conversation Context:
 {context}
 
-Current Query:
+Current User Query:
 {query}
 """)
         ])
 
-        result = (rewrite_prompt | rewrite_llm).invoke({
+        chain = prompt | llm
+
+        result = chain.invoke({
             "context": conversation_context,
             "query": query
         })
 
-        span.set_attribute("needs_rewrite", True)
+        span.set_attribute("needs_rewrite", result.needs_rewrite)
         span.set_attribute("optimized_query", result.rewritten_query)
 
-        if not result.needs_rewrite or not result.rewritten_query.strip():
-            return {
-                "needs_rewrite": False,
-                "optimized_query": query,
-                "node_name": "rewrite node"
-            }
+        print("Rewrite Result:", result)
 
         return {
-            "needs_rewrite": True,
-            "optimized_query": result.rewritten_query,
+            "needs_rewrite": result.needs_rewrite,
+            "optimized_query": result.rewritten_query if result.needs_rewrite else query,
             "node_name": "rewrite node"
         }
+
             
 def preprocess_node(state):
     print("Preprocess node begins execution")
@@ -902,12 +833,15 @@ def escalation_node(state: ShopState):
 
 
 
-async def execute_single_department(dept, latest_query, context, vectorstore, bm25_retriever, state):
-    """
-    Helper coroutine to handle RAG and LLM generation for one specific department.
-    """
-    # 1. Retrieval (If retrieve_docs is synchronous, it's fine to call here, 
-    # but the LLM call below will be awaited asynchronously)
+async def execute_single_department(
+    dept,
+    latest_query,
+    context,
+    vectorstore,
+    bm25_retriever,
+    state
+):
+
     docs = retrieve_docs(
         query=latest_query,
         department=dept,
@@ -919,13 +853,18 @@ async def execute_single_department(dept, latest_query, context, vectorstore, bm
         print(f"[System Failure] No RAG docs for {dept}")
         return None
 
-    # Use ANSWERS from metadata
-    rag_context = "\n\n".join([doc.metadata.get("answer", "") for doc in docs])
+    rag_context = "\n\n".join([
+        doc.metadata.get("answer", "") for doc in docs
+    ])
 
     if not rag_context.strip():
         return None
 
     llm, prompt = AGENT_MAP[dept]
+
+    # -------------------------
+    # Emotion-aware tone
+    # -------------------------
 
     tone_instruction = ""
 
@@ -936,9 +875,12 @@ async def execute_single_department(dept, latest_query, context, vectorstore, bm
     elif state.emotion == "fear":
         tone_instruction = "Respond in a reassuring and confident tone."
 
+    # -------------------------
+    # Build prompt input
+    # -------------------------
 
     enhanced_query = f"""
-PRIMARY TASK: Answer the following user query: {latest_query}
+PRIMARY TASK:
 Answer the following user query:
 
 {latest_query}
@@ -950,27 +892,38 @@ KNOWLEDGE BASE (Authoritative Source):
 
 ---
 
-INSTRUCTIONS:
-- Base your answer strictly on the provided knowledge base, but use the persona of the detected department {dept} to answer the query.
-- You may paraphrase and synthesize the information.
-- Do NOT introduce facts not present in the knowledge base.
-- Use Context Info for your understanding of the conversation and not as replacement of KNOWLEDGE BASE
-- If no relevant information exists, say:
+CONVERSATION CONTEXT (For clarification only, not as source of truth):
+{context}
+
+---
+
+TONE INSTRUCTION:
+{tone_instruction}
+
+---
+
+STRICT INSTRUCTIONS:
+- Base your answer strictly on the KNOWLEDGE BASE.
+- Do NOT introduce external information.
+- If the knowledge base does not clearly answer the query,
+  respond EXACTLY with:
   "This information is not available in our records."
 - Respond professionally.
-
 """
 
-    # 2. Async LLM Call: using .ainvoke instead of .invoke
     chain = prompt | llm
     result = await chain.ainvoke({"query": enhanced_query})
 
-   
-    if "not available in our records" in result.content:
+    response_text = result.content.strip()
+
+    print("Response =", response_text)
+
+    # Deterministic knowledge-gap detection
+    if response_text == "This information is not available in our records.":
         print(f"⚠️ [System Failure] LLM confirmed no info for {dept}")
         return None
-        
-    return result.content
+
+    return response_text
 
 async def department_execution_node(state: ShopState):
     """
