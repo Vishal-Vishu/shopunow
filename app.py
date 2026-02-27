@@ -5,8 +5,12 @@ from dotenv import load_dotenv
 
 from graphbuilder import build_graph
 from multimodalprocessor import process_uploaded_file
-from memory import get_user_history, append_user_history
-from config import GraphBusinessLogger
+
+from memory import (
+    initialize_conversation_table,
+    append_message,
+    fetch_session_history
+)
 
 from support_db import (
     save_support_ticket,
@@ -31,13 +35,19 @@ st.set_page_config(
 st.title("🛍️ ShopUNow Agentic AI Assistant")
 
 # ==========================================================
-# Cleanup Expired Sessions On App Load
+# Cleanup Expired Sessions
 # ==========================================================
 
 cleanup_expired_sessions(timeout_minutes=30)
 
 # ==========================================================
-# Initialize LangGraph (Only Once)
+# Initialize Conversation Table (DB Memory)
+# ==========================================================
+
+initialize_conversation_table()
+
+# ==========================================================
+# Initialize Graph (Cached)
 # ==========================================================
 
 @st.cache_resource
@@ -60,16 +70,13 @@ if not phone:
 # SESSION MANAGEMENT
 # ==========================================================
 
-# Create session immediately after phone entry
 if "session_id" not in st.session_state:
-
     session_id = create_user_session(phone)
-
     st.session_state.session_id = session_id
     st.session_state.session_phone = phone
     st.session_state.session_start_time = time.time()
 
-# If phone changes → close old session & create new one
+# If phone changes
 if (
     "session_phone" in st.session_state
     and st.session_state.session_phone != phone
@@ -77,56 +84,47 @@ if (
     close_user_session(st.session_state.session_id)
 
     new_session_id = create_user_session(phone)
-
     st.session_state.session_id = new_session_id
     st.session_state.session_phone = phone
     st.session_state.session_start_time = time.time()
 
-# Check inactivity timeout (30 mins)
+# Session timeout
 if is_session_expired(st.session_state.session_id, timeout_minutes=30):
-
     close_user_session(st.session_state.session_id)
-
     st.warning("⏳ Session expired due to inactivity. Please re-login.")
     st.session_state.clear()
     st.stop()
 
 # ==========================================================
-# Session State Initialization
+# Load Conversation History (Session-Based)
 # ==========================================================
 
-if "loaded_phone" not in st.session_state or st.session_state.loaded_phone != phone:
-    st.session_state.loaded_phone = phone
-    st.session_state.chat_history = get_user_history(phone)
+if (
+    "loaded_session" not in st.session_state
+    or st.session_state.loaded_session != st.session_state.session_id
+):
+    st.session_state.loaded_session = st.session_state.session_id
+    st.session_state.chat_history = fetch_session_history(
+        st.session_state.session_id,
+        limit=20
+    )
     st.session_state.escalation_active = False
-
-    # Reset clarification state
     st.session_state.awaiting_clarification = False
     st.session_state.clarification_context = None
 
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
-
-if "escalation_active" not in st.session_state:
-    st.session_state.escalation_active = False
-
-if "awaiting_clarification" not in st.session_state:
-    st.session_state.awaiting_clarification = False
-
-if "clarification_context" not in st.session_state:
-    st.session_state.clarification_context = None
-
 # ==========================================================
-# Display Previous Conversations
+# Display Conversation
 # ==========================================================
 
 st.subheader("💬 Conversation")
 
 for item in st.session_state.chat_history:
-    with st.chat_message("user"):
-        st.markdown(item["query"])
-    with st.chat_message("assistant"):
-        st.markdown(item["response"])
+    if item.get("query"):
+        with st.chat_message("user"):
+            st.markdown(item["query"])
+    if item.get("response"):
+        with st.chat_message("assistant"):
+            st.markdown(item["response"])
 
 # ==========================================================
 # Escalation Form
@@ -157,24 +155,30 @@ if st.session_state.escalation_active:
                     "original_query": st.session_state.chat_history[-1]["query"]
                 })
 
-                confirmation_message = {
-                    "query": "Support form submitted",
-                    "response": "✅ Your support request has been submitted successfully. Our team will contact you shortly."
-                }
+                append_message(
+                    phone=phone,
+                    session_id=st.session_state.session_id,
+                    query="Support form submitted",
+                    response="✅ Your support request has been submitted successfully. Our team will contact you shortly.",
+                    turn_type="escalation_confirmation",
+                    department="HUMAN_SUPPORT",
+                    sentiment="neutral",
+                    emotion="neutral"
+                )
 
-                st.session_state.chat_history.append(confirmation_message)
-                append_user_history(phone, confirmation_message)
+                st.session_state.chat_history = fetch_session_history(
+                    st.session_state.session_id,
+                    limit=20
+                )
 
                 st.session_state.escalation_active = False
-
                 update_session_activity(st.session_state.session_id)
-
                 st.rerun()
 
     st.stop()
 
 # ==========================================================
-# Multimodal File Upload
+# File Upload
 # ==========================================================
 
 uploaded_file = st.file_uploader(
@@ -190,17 +194,13 @@ user_query = st.chat_input("Type your message here...")
 
 if user_query:
 
-    # Update session activity
     update_session_activity(st.session_state.session_id)
-
-    with st.chat_message("user"):
-        st.markdown(user_query)
 
     combined_query = user_query
 
-    # ======================================================
+    # --------------------------------------
     # Multimodal Processing
-    # ======================================================
+    # --------------------------------------
 
     if uploaded_file:
         with st.spinner("Processing uploaded file..."):
@@ -219,11 +219,9 @@ Attached Document Content:
 Please consider both while responding.
 """
 
-    # ======================================================
-    # Invoke LangGraph
-    # ======================================================
-
-    start_time = time.perf_counter()
+    # --------------------------------------
+    # Graph Invocation
+    # --------------------------------------
 
     with st.spinner("Thinking..."):
         result = asyncio.run(
@@ -232,12 +230,15 @@ Please consider both while responding.
                     "query": combined_query,
                     "phone": phone,
                     "session_id": st.session_state.session_id,
-                    "history": st.session_state.chat_history,
+                    "history": fetch_session_history(
+                        st.session_state.session_id,
+                        limit=20
+                    ),
                     "sentiment": None,
                     "departments": None,
                     "responses": [],
                     "final_response": None,
-                    "escalation_required": st.session_state.escalation_active,
+                    "escalation_required": False,
                     "awaiting_clarification": st.session_state.awaiting_clarification,
                     "clarification_context": st.session_state.clarification_context,
                     "has_attachment": bool(uploaded_file),
@@ -245,56 +246,60 @@ Please consider both while responding.
             )
         )
 
-    end_time = time.perf_counter()
-    total_latency = round(end_time - start_time, 3)
-    print(f"Total time taken - {total_latency} seconds")
-
-    final_response = result.get("final_response")
+    final_response = result.get("final_response") or "⚠️ No response generated."
     escalation_required = result.get("escalation_required", False)
 
     st.session_state.awaiting_clarification = result.get(
-        "awaiting_clarification",
-        False
+        "awaiting_clarification", False
     )
 
     st.session_state.clarification_context = result.get(
         "clarification_context"
     )
 
-    if not final_response:
-        final_response = "⚠️ Sorry, no response was generated."
-
-    # ======================================================
-    # Escalation Handling
-    # ======================================================
+    # --------------------------------------
+    # Escalation Trigger
+    # --------------------------------------
 
     if escalation_required:
 
+        append_message(
+            phone=phone,
+            session_id=st.session_state.session_id,
+            query=user_query,
+            response="⚠️ Escalated to human support.",
+            turn_type="escalation_triggered",
+            department="HUMAN_SUPPORT",
+            sentiment=result.get("sentiment"),
+            emotion=result.get("emotion")
+        )
+
+        st.session_state.chat_history = fetch_session_history(
+            st.session_state.session_id,
+            limit=20
+        )
+
         st.session_state.escalation_active = True
-
-        escalation_entry = {
-            "query": user_query,
-            "response": "⚠️ Escalated to human support."
-        }
-
-        st.session_state.chat_history.append(escalation_entry)
-        append_user_history(phone, escalation_entry)
-
         st.rerun()
 
-    # ======================================================
-    # Normal Response
-    # ======================================================
+    # --------------------------------------
+    # Normal Response Logging
+    # --------------------------------------
 
-    with st.chat_message("assistant"):
-        st.markdown(final_response)
+    append_message(
+        phone=phone,
+        session_id=st.session_state.session_id,
+        query=result.get("query", user_query),
+        response=final_response,
+        turn_type=result.get("turn_type", "success"),
+        department=",".join(result.get("departments", [])) if result.get("departments") else None,
+        sentiment=result.get("sentiment"),
+        emotion=result.get("emotion")
+    )
 
-    resolved_query = result.get("query", user_query)
+    st.session_state.chat_history = fetch_session_history(
+        st.session_state.session_id,
+        limit=20
+    )
 
-    new_entry = {
-        "query": resolved_query,
-        "response": final_response
-    }
-
-    st.session_state.chat_history.append(new_entry)
-    append_user_history(phone, new_entry)
+    st.rerun()

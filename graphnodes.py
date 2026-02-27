@@ -428,53 +428,74 @@ def build_conversation_context(state: ShopState, max_turns: int = 2):
 
     print("Build conversation context")
 
-    history = state.history
+    history = state.history or []
 
     if not history:
         return ""
 
-    # --------------------------------------------------
-    # 1️⃣ Separate long-term & short-term memory
-    # --------------------------------------------------
+    # ----------------------------------------
+    # Normalize history safely (dict OR object)
+    # ----------------------------------------
+
+    normalized_history = []
+
+    for item in history:
+
+        if isinstance(item, dict):
+            query = item.get("query")
+            response = item.get("response")
+            turn_type = item.get("turn_type", "success")
+        else:
+            query = getattr(item, "query", None)
+            response = getattr(item, "response", None)
+            turn_type = getattr(item, "turn_type", "success")
+
+        if query or response:
+            normalized_history.append({
+                "query": query,
+                "response": response,
+                "turn_type": turn_type
+            })
+
+    if not normalized_history:
+        return ""
+
+    # Remove system failures
     valid_history = [
-        item for item in history 
-        if getattr(item, "turn_type", "success") != "system_failure"
+        item for item in normalized_history
+        if item["turn_type"] != "system_failure"
     ]
 
-    # Recent Detailed Turns (using only valid items)
-    
-    long_term = history[:-max_turns] if len(history) > max_turns else []
+    long_term = valid_history[:-max_turns] if len(valid_history) > max_turns else []
     recent_history = valid_history[-max_turns:]
 
     context_parts = []
 
-    # --------------------------------------------------
-    # 2️⃣ Compressed Long-Term Memory
-    # --------------------------------------------------
+    # ----------------------------------------
+    # Compressed long-term memory
+    # ----------------------------------------
 
     if long_term:
-        summary_lines = []
-        for item in long_term:
-            summary_lines.append(f"User previously asked about: {item.query}")
-
-        compressed_summary = "\n".join(summary_lines[-5:])  # cap summary size
-
         context_parts.append("Conversation Summary:")
-        context_parts.append(compressed_summary)
+        for item in long_term[-5:]:
+            if item["query"]:
+                context_parts.append(f"User previously asked about: {item['query']}")
 
-    # --------------------------------------------------
-    # 3️⃣ Recent Detailed Turns
-    # --------------------------------------------------
+    # ----------------------------------------
+    # Recent detailed turns
+    # ----------------------------------------
 
     context_parts.append("\nRecent Conversation:")
 
     for item in recent_history:
-        context_parts.append(f"User: {item.query}")
-        context_parts.append(f"Assistant: {item.response}")
+        if item["query"]:
+            context_parts.append(f"User: {item['query']}")
+        if item["response"]:
+            context_parts.append(f"Assistant: {item['response']}")
 
-    # --------------------------------------------------
-    # 4️⃣ Include Optimized Query If Exists
-    # --------------------------------------------------
+    # ----------------------------------------
+    # Include optimized query if exists
+    # ----------------------------------------
 
     if getattr(state, "optimized_query", None):
         context_parts.append(
@@ -483,10 +504,9 @@ def build_conversation_context(state: ShopState, max_turns: int = 2):
 
     final_context = "\n".join(context_parts)
 
-    print("Conversation context finished=", final_context)
+    print("Conversation context finished =", final_context)
 
-    return final_context.strip()
-            
+    return final_context.strip()            
 
 def sentiment_node(state: ShopState):
 
@@ -758,8 +778,10 @@ def department_node(state: ShopState):
 
     print("Hybrid Department Routing Node Executed")
 
-    query = build_routing_context(state)
-    print("Routing Query:", query)
+    #query = build_routing_context(state)
+    #print("Routing Query:", query)
+
+    query = state.optimized_query or state.query
 
     # --------------------------------------------------
     # 1️⃣ Taxonomy Scoring

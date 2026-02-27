@@ -1,33 +1,72 @@
-import json
-import os
+import sqlite3
+from contextlib import contextmanager
 
-MEMORY_FILE = "conversation_memory.json"
+DB_PATH = "support_tickets.db"
 
-def load_memory():
-    # 1. Check if file exists
-    if not os.path.exists(MEMORY_FILE):
-        return {}
-
-    # 2. Check if file is empty (size is 0 bytes)
-    if os.path.getsize(MEMORY_FILE) == 0:
-        return {}
-
+@contextmanager
+def get_connection():
+    conn = sqlite3.connect(DB_PATH, check_same_thread=False)
+    conn.row_factory = sqlite3.Row
     try:
-        with open(MEMORY_FILE, "r") as f:
-            return json.load(f)
-    except (json.JSONDecodeError, ValueError):
-        # 3. Handle cases where file has content but it's not valid JSON
-        return {}
+        yield conn
+    finally:
+        conn.commit()
+        conn.close()
 
-def save_memory(memory):
-    with open(MEMORY_FILE, "w") as f:
-        json.dump(memory, f, indent=2)
 
-def get_user_history(phone):
-    memory = load_memory()
-    return memory.get(phone, [])
+def initialize_conversation_table():
+    with get_connection() as conn:
+        conn.execute("""
+        CREATE TABLE IF NOT EXISTS conversation_messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            phone TEXT NOT NULL,
+            session_id TEXT NOT NULL,
+            query TEXT,
+            response TEXT,
+            turn_type TEXT,
+            department TEXT,
+            sentiment TEXT,
+            emotion TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
 
-def append_user_history(phone, message):
-    memory = load_memory()
-    memory.setdefault(phone, []).append(message)
-    save_memory(memory)
+
+def append_message(
+    phone,
+    session_id,
+    query,
+    response,
+    turn_type=None,
+    department=None,
+    sentiment=None,
+    emotion=None
+):
+    with get_connection() as conn:
+        conn.execute("""
+        INSERT INTO conversation_messages
+        (phone, session_id, query, response, turn_type, department, sentiment, emotion)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            phone,
+            session_id,
+            query,
+            response,
+            turn_type,
+            department,
+            sentiment,
+            emotion
+        ))
+
+
+def fetch_session_history(session_id, limit=20):
+    with get_connection() as conn:
+        rows = conn.execute("""
+        SELECT query, response, turn_type
+        FROM conversation_messages
+        WHERE session_id = ?
+        ORDER BY created_at ASC
+        LIMIT ?
+        """, (session_id, limit)).fetchall()
+
+        return [dict(row) for row in rows]
