@@ -81,19 +81,22 @@ def retrieve_docs(
                     reverse=True
                 )
 
+                print("Vector store Results \n")
+                print(vector_results)
+
                 best_score = vector_results[0][1]
                 vspan.set_attribute("best_vector_score", best_score)
 
                 # Absolute threshold (prevents junk matches)
-                filtered = [
-                    (doc, score)
-                    for doc, score in vector_results
-                    if score >= SIMILARITY_THRESHOLD
-                ]
+                # filtered = [
+                #     (doc, score)
+                #     for doc, score in vector_results
+                #     if score >= SIMILARITY_THRESHOLD
+                # ]
 
                 # Deterministic top-k selection
                 vector_docs = [
-                    doc for doc, score in filtered[:TOP_K_USE]
+                    doc for doc, score in vector_results[:TOP_K_USE]
                 ]
 
                 vspan.set_attribute("vector_docs_count", len(vector_docs))
@@ -138,6 +141,8 @@ def retrieve_docs(
                         )
                     except KeyError:
                         continue
+
+            print(f"[BM25] Retrieved {len(bm25_items)} raw items for dept={department}")        
 
             bspan.set_attribute("bm25_docs_count", len(bm25_docs))
 
