@@ -103,22 +103,17 @@ def build_graph():
         emotion = state.emotion or "neutral"
         intensity = state.emotion_intensity or 0.0
 
-        # 1️⃣ Immediate escalation conditions
+        #  Immediate escalation conditions
         if state.escalation_required:
             return "escalation"
 
-        # 2️⃣ Strong anger → escalate
+        #  Strong anger → escalate
         if emotion == "anger" and intensity > 0.7:
             return "escalation"
 
-        # 3️⃣ Fear → escalate (trust risk)
+        #  Fear → escalate (trust risk)
         if emotion == "fear" and intensity > 0.6:
             return "escalation"
-
-        # 4️⃣ Sadness or disappointment → allow department handling
-        # but with emotional tone injection (already implemented)
-
-        # 5️⃣ Confusion → continue to department (likely needs explanation)
 
         return "department"
 

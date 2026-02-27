@@ -10,7 +10,7 @@ from multimodalprocessor import process_uploaded_file
 from langgraph.graph import StateGraph, END
 
 from graphnodes import (rewrite_node, guardrail_node, guardrail_block_node, department_node,
-                        department_execution_node, response_enrichment_node) 
+                        department_execution_node, response_enrichment_node, clarification_node, sentiment_node) 
 
 
 # ==========================================================
@@ -50,6 +50,22 @@ class ChatResponse(BaseModel):
     faithfulness_score: Optional[float] = None
     relevance_score: Optional[float] = None
     topic_shift_detected: Optional[bool] = None
+    awaiting_clarification: Optional[bool] = None
+
+def build_rewrite_only_graph():
+    graph = StateGraph(ShopState)
+
+    graph.add_node("rewrite", rewrite_node)
+
+    graph.set_entry_point("rewrite")
+    graph.add_edge("rewrite", END)
+
+    return graph.compile()
+
+class RewriteTestResponse(BaseModel):
+    original_query: str
+    optimized_query: Optional[str] = None
+    needs_rewrite: Optional[bool] = None
     awaiting_clarification: Optional[bool] = None
 
 def build_guardrail_graph():
@@ -105,6 +121,30 @@ def build_execution_graph():
     graph.add_node("response_enrichment", response_enrichment_node)
 
     graph.set_entry_point("execute_departments")
+    graph.add_edge("execute_departments", "response_enrichment")
+    graph.add_edge("response_enrichment", END)
+
+    return graph.compile()
+
+def build_continue_graph():
+
+    graph = StateGraph(ShopState)
+
+    graph.add_node("clarification_resolver", clarification_node)
+    graph.add_node("rewrite", rewrite_node)
+    graph.add_node("guardrail", guardrail_node)
+    graph.add_node("sentiment", sentiment_node)
+    graph.add_node("department", department_node)
+    graph.add_node("execute_departments", department_execution_node)
+    graph.add_node("response_enrichment", response_enrichment_node)
+
+    graph.set_entry_point("clarification_resolver")
+
+    graph.add_edge("clarification_resolver", "rewrite")
+    graph.add_edge("rewrite", "guardrail")
+    graph.add_edge("guardrail", "sentiment")
+    graph.add_edge("sentiment", "department")
+    graph.add_edge("department", "execute_departments")
     graph.add_edge("execute_departments", "response_enrichment")
     graph.add_edge("response_enrichment", END)
 
@@ -219,11 +259,13 @@ async def continue_conversation(request: ChatRequest):
     """
     Used when awaiting_clarification = True
     """
+
+    graph = build_continue_graph()
     result = await graph.ainvoke({
-        "query": request.query,
-        "phone": request.phone,
-        "history": request.history,
-        "awaiting_clarification": True
+    "query": request.query,
+    "phone": request.phone,
+    "history": [item.model_dump() for item in request.history] if request.history else [],
+    "has_attachment": request.has_attachment
     })
 
     return {
@@ -239,3 +281,22 @@ async def continue_conversation(request: ChatRequest):
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
+
+@app.post("/test-rewrite", response_model=RewriteTestResponse)
+async def test_rewrite(request: ChatRequest):
+
+    rewrite_graph = build_rewrite_only_graph()
+
+    result = await rewrite_graph.ainvoke({
+        "query": request.query,
+        "history": [item.model_dump() for item in request.history] if request.history else [],
+        "awaiting_clarification": False,
+        "clarification_context": None
+    })
+
+    return RewriteTestResponse(
+        original_query=request.query,
+        optimized_query=result.get("optimized_query"),
+        needs_rewrite=result.get("needs_rewrite"),
+        awaiting_clarification=result.get("awaiting_clarification")
+    )

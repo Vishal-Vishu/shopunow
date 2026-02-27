@@ -33,6 +33,31 @@ KNOWN_KEYWORDS = set(TAXONOMY["all_keywords"])
 def normalize(text: str):
     return re.sub(r"\s+", " ", text.strip().lower())
 
+def is_gibberish(text: str) -> bool:
+    text = text.strip()
+
+    if len(text) < 2:
+        return True
+
+    # Must contain at least one proper word (>=3 alphabetic chars)
+    words = re.findall(r"[a-zA-Z]{3,}", text)
+
+    if len(words) == 0:
+        return True
+
+    # Too many special characters
+    special_ratio = sum(1 for c in text if not c.isalnum() and not c.isspace()) / max(len(text), 1)
+
+    if special_ratio > 0.4:
+        return True
+
+    # Random character clusters (low vowel ratio)
+    vowels = sum(1 for c in text.lower() if c in "aeiou")
+    if vowels / max(len(text), 1) < 0.15:
+        return True
+
+    return False
+
 class GuardrailOutput(BaseModel):
     out_of_scope: bool
     reason: str
@@ -152,6 +177,14 @@ Return structured output only.
         "node_name": "rewrite node"
     }    
 
+from typing import Literal
+
+class ClarificationIntent(BaseModel):
+    intent: Literal["confirm_shift", "reject_shift", "unclear"]
+
+class RewriteDecision(BaseModel):
+    needs_rewrite: bool
+
 def rewrite_node(state: ShopState):
 
     with tracer.start_as_current_span("rewrite_node"):
@@ -159,27 +192,46 @@ def rewrite_node(state: ShopState):
         span = trace.get_current_span()
 
         # ==================================================
-        # 1️⃣ Clarification Handling (INTERCEPT EARLY)
+        # 1️⃣ Clarification Handling (LLM-Based Intent)
         # ==================================================
 
         if state.awaiting_clarification:
 
             print("Handling clarification response")
 
-            user_reply = state.query.lower().strip()
+            user_reply = state.query.strip()
 
             clarification_ctx = state.clarification_context or {}
             previous_query = clarification_ctx.get("previous_query")
             new_query = clarification_ctx.get("new_query")
 
-            # ---- Confirm Topic Shift ----
-            if any(word in user_reply for word in ["yes", "yeah", "correct", "right"]):
+            llm = ChatOpenAI(
+                model="gpt-4o-mini",
+                temperature=0
+            ).with_structured_output(ClarificationIntent)
 
-                print("User confirmed topic shift")
-                span.set_attribute("Optimized Query=",new_query)
-                span.set_attribute("Previous Query = ", previous_query)
+            prompt = ChatPromptTemplate.from_messages([
+                ("system", """
+You classify clarification responses.
+
+User was asked to confirm switching to a new issue.
+
+Classify reply as:
+- confirm_shift
+- reject_shift
+- unclear
+
+Return structured output only.
+"""),
+                ("human", "{reply}")
+            ])
+
+            result = (prompt | llm).invoke({"reply": user_reply})
+            intent = result.intent
+
+            if intent == "confirm_shift":
+                span.set_attribute("clarification_intent", "confirm_shift")
                 return {
-                    # 🔥 CRITICAL: Override query itself
                     "query": new_query,
                     "optimized_query": new_query,
                     "awaiting_clarification": False,
@@ -188,13 +240,9 @@ def rewrite_node(state: ShopState):
                     "node_name": "rewrite node"
                 }
 
-            # ---- Reject Topic Shift ----
-            if any(word in user_reply for word in ["no", "not"]):
-
-                print("User rejected topic shift")
-
+            elif intent == "reject_shift":
+                span.set_attribute("clarification_intent", "reject_shift")
                 return {
-                    # 🔥 CRITICAL: Revert to previous query
                     "query": previous_query,
                     "optimized_query": previous_query,
                     "awaiting_clarification": False,
@@ -203,14 +251,12 @@ def rewrite_node(state: ShopState):
                     "node_name": "rewrite node"
                 }
 
-            # ---- Unclear Confirmation ----
-            print("Unclear clarification response")
-
-            return {
-                "final_response": "Could you please confirm whether you are switching to the new issue?",
-                "awaiting_clarification": True,
-                "node_name": "rewrite node"
-            }
+            else:
+                return {
+                    "final_response": "Could you please confirm whether you are switching to the new issue?",
+                    "awaiting_clarification": True,
+                    "node_name": "rewrite node"
+                }
 
         # ==================================================
         # 2️⃣ Normal Rewrite Flow
@@ -222,18 +268,10 @@ def rewrite_node(state: ShopState):
         span.set_attribute("query_used", query)
 
         # --------------------------------------------------
-        # Build conversation context
+        # Cheap lexical junk filter
         # --------------------------------------------------
 
-        conversation_context = build_conversation_context(state)
-        has_context = bool(conversation_context.strip())
-
-        # --------------------------------------------------
-        # Cheap Skip Rule
-        # --------------------------------------------------
-
-        if len(query.split()) > 6 and query.endswith("?") and not has_context:
-
+        if is_gibberish(query):
             return {
                 "needs_rewrite": False,
                 "optimized_query": query,
@@ -241,15 +279,78 @@ def rewrite_node(state: ShopState):
             }
 
         # --------------------------------------------------
-        # Context-Aware LLM Rewrite
+        # Build conversation context
         # --------------------------------------------------
 
-        llm = ChatOpenAI(
+        conversation_context = build_conversation_context(state)
+
+        # --------------------------------------------------
+        # Semantic Rewrite Decision (LLM)
+        # --------------------------------------------------
+
+        decision_llm = ChatOpenAI(
+            model="gpt-4o-mini",
+            temperature=0
+        ).with_structured_output(RewriteDecision)
+
+        decision_prompt = ChatPromptTemplate.from_messages([
+            ("system", """
+You are a strict rewrite decision classifier.
+
+Set needs_rewrite = true ONLY if the query:
+
+1. Cannot be understood without previous conversation
+2. Is grammatically broken or incomplete
+3. Is clearly ambiguous (e.g., "where can I check?")
+4. Is a fragment lacking key subject or object
+
+DO NOT rewrite:
+- Clear full questions
+- Properly formed sentences
+- Questions ending with ?
+- Queries that are already self-contained
+- Queries that are emotionally charged but grammatically correct
+
+Cosmetic improvements are NOT allowed.
+
+If the meaning is already clear, set needs_rewrite = false.
+
+Be conservative.
+
+Return structured output only.
+"""),
+            ("human", """
+Conversation Context:
+{context}
+
+Current Query:
+{query}
+""")
+        ])
+
+        decision = (decision_prompt | decision_llm).invoke({
+            "context": conversation_context,
+            "query": query
+        })
+
+        if not decision.needs_rewrite:
+            span.set_attribute("needs_rewrite", False)
+            return {
+                "needs_rewrite": False,
+                "optimized_query": query,
+                "node_name": "rewrite node"
+            }
+
+        # --------------------------------------------------
+        # Context-Aware Rewrite (LLM)
+        # --------------------------------------------------
+
+        rewrite_llm = ChatOpenAI(
             model="gpt-4o-mini",
             temperature=0
         ).with_structured_output(RewriteOutput)
 
-        prompt = ChatPromptTemplate.from_messages([
+        rewrite_prompt = ChatPromptTemplate.from_messages([
             ("system", """
 You are a context-aware query rewriting assistant for ShopUNow.
 
@@ -263,37 +364,40 @@ Your task:
 - If the CURRENT USER QUERY is random word which doesnt have a proper meaning set needs_rewrite = false             
 
 If the query is already clear and self-contained,
-set needs_rewrite = false.
+Be conservative.
 
-Return structured output only.
+Return structured output only
 """),
             ("human", """
 Conversation Context:
 {context}
 
-Current User Query:
+Current Query:
 {query}
 """)
         ])
 
-        chain = prompt | llm
-
-        result = chain.invoke({
+        result = (rewrite_prompt | rewrite_llm).invoke({
             "context": conversation_context,
             "query": query
         })
 
-        span.set_attribute("needs_rewrite", result.needs_rewrite)
+        span.set_attribute("needs_rewrite", True)
         span.set_attribute("optimized_query", result.rewritten_query)
 
-        print("Rewrite Result:", result)
+        if not result.needs_rewrite or not result.rewritten_query.strip():
+            return {
+                "needs_rewrite": False,
+                "optimized_query": query,
+                "node_name": "rewrite node"
+            }
 
         return {
-            "needs_rewrite": result.needs_rewrite,
-            "optimized_query": result.rewritten_query if result.needs_rewrite else query,
+            "needs_rewrite": True,
+            "optimized_query": result.rewritten_query,
             "node_name": "rewrite node"
         }
-        
+            
 def preprocess_node(state):
     print("Preprocess node begins execution")
     conversation_context = ""
