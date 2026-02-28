@@ -70,6 +70,14 @@ def guardrail_node(state: ShopState):
 
     print("Guard Rail node started")
 
+    if state.awaiting_clarification:
+        print("Bypassing guardrail for clarification response.")
+        return {
+            "out_of_scope": False,
+            "guardrail_reason": "Clarification reply.",
+            "node_name": "guardrail_bypass"
+        }
+
     effective_query = state.optimized_query or state.query
 
     query = normalize(effective_query)
@@ -101,8 +109,7 @@ def guardrail_node(state: ShopState):
         if keyword in query:
             return {
                 "out_of_scope": False,
-                "guardrail_reason": "Matched known taxonomy keyword.",
-                "node_name": "Guard Rail Node"
+                "guardrail_reason": "Matched known taxonomy keyword."
             }    
 
     # -----------------------------------------
@@ -174,7 +181,7 @@ Return structured output only.
     return {
         "out_of_scope": result.out_of_scope,
         "guardrail_reason": result.reason,
-        "node_name": "rewrite node"
+        "node_name": "guardrail node"
     }    
 
 
@@ -378,6 +385,7 @@ Return structured output only.
                     "awaiting_clarification": False,
                     "clarification_context": None,
                     "needs_rewrite": False,
+                    "topic_shift_detected": False,
                     "node_name": "rewrite node"
                 }
 
@@ -391,6 +399,7 @@ Return structured output only.
                     "awaiting_clarification": False,
                     "clarification_context": None,
                     "needs_rewrite": False,
+                    "topic_shift_detected": False,
                     "node_name": "rewrite node"
                 }
 
@@ -808,85 +817,20 @@ def department_node(state: ShopState):
     print("Taxonomy Scores:", dict(taxonomy_scores))
 
     # Normalize taxonomy selection
-    taxonomy_departments = []
+    final_departments = []
 
     if taxonomy_scores:
         max_score = max(taxonomy_scores.values())
 
-        taxonomy_departments = [
+        final_departments = [
             dept
             for dept, score in taxonomy_scores.items()
             if score >= max_score * 0.8  # relative threshold
         ]
 
-    print("Taxonomy Departments:", taxonomy_departments)
+    print("Taxonomy Departments:", final_departments)
 
-    # --------------------------------------------------
-    # 2️⃣ LLM Semantic Routing
-    # --------------------------------------------------
-
-    llm = ChatOpenAI(
-        model="gpt-4o-mini",
-        temperature=0
-    ).with_structured_output(DepartmentRouting)
-
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", """
-You are a strict routing classifier for ShopUNow.
-
-Determine which department(s) should handle the query.
-
-Valid departments:
-HR, IT, FACILITIES, BILLING, SHIPPING
-
-Rules:
-- Base decision only on the current query.
-- Do not guess.
-- If unclear, return [].
-- Return structured output only.
-"""),
-        ("human", "{query}")
-    ])
-
-    chain = prompt | llm
-
-    try:
-        llm_result = chain.invoke({"query": query})
-        llm_departments = llm_result.departments
-    except Exception as e:
-        print("LLM routing error:", e)
-        llm_departments = []
-
-    print("LLM Departments:", llm_departments)
-
-    # --------------------------------------------------
-    # 3️⃣ Hybrid Merge Logic
-    # --------------------------------------------------
-
-    final_departments = set()
-
-    # Case A: Both agree
-    intersection = set(taxonomy_departments) & set(llm_departments)
-
-    if intersection:
-        final_departments = intersection
-
-    # Case B: Taxonomy strong but LLM empty
-    elif taxonomy_departments and not llm_departments:
-        final_departments = set(taxonomy_departments)
-
-    # Case C: LLM predicts but taxonomy weak
-    elif llm_departments and not taxonomy_departments:
-        final_departments = set(llm_departments)
-
-    # Case D: Both predict but different
-    elif taxonomy_departments and llm_departments:
-        final_departments = set(taxonomy_departments) | set(llm_departments)
-
-    else:
-        final_departments = set()
-
-    final_departments = list(final_departments)
+    
 
     print("Final Hybrid Departments:", final_departments)
 
@@ -1476,9 +1420,85 @@ def topic_shift_node(state: ShopState):
         "node_name": "topic_shift"
     }
 
+from typing import Literal
+from pydantic import BaseModel
+
+class ClarificationIntent(BaseModel):
+    intent: Literal["confirm_shift", "reject_shift", "unclear"]
+
+
 def clarification_node(state: ShopState):
 
     print("Clarification Node Activated")
+
+    # ==========================================================
+    # MODE 1: HANDLE USER CONFIRMATION
+    # ==========================================================
+
+    if state.awaiting_clarification:
+
+        user_reply = state.query.strip()
+
+        clarification_ctx = state.clarification_context or {}
+        previous_query = clarification_ctx.get("previous_query") or state.query
+        new_query = clarification_ctx.get("optimized_query") or state.query
+
+        llm = ChatOpenAI(
+            model="gpt-4o-mini",
+            temperature=0
+        ).with_structured_output(ClarificationIntent)
+
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", """
+User was asked whether they are switching to a new issue.
+
+Classify the reply strictly as:
+- confirm_shift
+- reject_shift
+- unclear
+
+Return structured output only.
+"""),
+            ("human", "{reply}")
+        ])
+
+        result = (prompt | llm).invoke({"reply": user_reply})
+        intent = result.intent
+
+        # Confirmed topic shift
+        if intent == "confirm_shift":
+            return {
+                "query": new_query,
+                "optimized_query": new_query,
+                "awaiting_clarification": False,
+                "clarification_context": None,
+                "topic_shift_detected": False,
+                "node_name": "clarification_confirmed",
+                "clarification_resolved": "confirm"
+            }
+
+        # Rejected topic shift
+        elif intent == "reject_shift":
+            return {
+            "final_response": "Thanks for clarifying. Please enter your query related to your issue.",
+            "awaiting_clarification": False,
+            "clarification_context": None,
+            "topic_shift_detected": False,
+            "out_of_scope": False,
+            "clarification_resolved": "reject"
+        }
+
+        # Still unclear
+        else:
+            return {
+                "final_response": "Could you please confirm whether you are switching to the new issue?",
+                "awaiting_clarification": True,
+                "node_name": "clarification_repeat"
+            }
+
+    # ==========================================================
+    # MODE 2: ASK FOR CLARIFICATION
+    # ==========================================================
 
     previous_query = state.history[-1].query if state.history else "previous topic"
     current_query = state.query
@@ -1496,7 +1516,7 @@ def clarification_node(state: ShopState):
         "awaiting_clarification": True,
         "clarification_context": {
             "previous_query": previous_query,
-            "new_query": current_query
+            "optimized_query": current_query
         },
-        "node_name": "clarification"
+        "node_name": "clarification_asked"
     }
