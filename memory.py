@@ -70,3 +70,15 @@ def fetch_session_history(session_id, limit=20):
         """, (session_id, limit)).fetchall()
 
         return [dict(row) for row in rows]
+    
+def fetch_phone_history(phone, limit=50):
+    with get_connection() as conn:
+        rows = conn.execute("""
+        SELECT query, response, turn_type
+        FROM conversation_messages
+        WHERE phone = ?
+        ORDER BY created_at ASC
+        LIMIT ?
+        """, (phone, limit)).fetchall()
+
+        return [dict(row) for row in rows]    

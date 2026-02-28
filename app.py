@@ -9,7 +9,8 @@ from multimodalprocessor import process_uploaded_file
 from memory import (
     initialize_conversation_table,
     append_message,
-    fetch_session_history
+    fetch_session_history,
+    fetch_phone_history
 )
 
 from support_db import (
@@ -104,9 +105,9 @@ if (
     or st.session_state.loaded_session != st.session_state.session_id
 ):
     st.session_state.loaded_session = st.session_state.session_id
-    st.session_state.chat_history = fetch_session_history(
-        st.session_state.session_id,
-        limit=20
+    st.session_state.chat_history = fetch_phone_history(
+        phone,
+        limit=50
     )
     st.session_state.escalation_active = False
     st.session_state.awaiting_clarification = False
