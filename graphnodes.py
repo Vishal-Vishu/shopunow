@@ -825,7 +825,7 @@ def department_node(state: ShopState):
         final_departments = [
             dept
             for dept, score in taxonomy_scores.items()
-            if score >= max_score * 0.8  # relative threshold
+            if score >= max_score * 0.6  # relative threshold
         ]
 
     print("Taxonomy Departments:", final_departments)
@@ -933,10 +933,13 @@ TONE INSTRUCTION:
 
 STRICT INSTRUCTIONS:
 - Base your answer strictly on the KNOWLEDGE BASE.
-- Do NOT introduce external information.
-- If the knowledge base does not clearly answer the query,
+- You may paraphrase and infer logically from the knowledge base content.
+- If the knowledge base contains information that reasonably answers the query,
+  provide that information clearly.
+- Only if the knowledge base contains NO relevant information at all,
   respond EXACTLY with:
   "This information is not available in our records."
+- Do NOT introduce external information.
 - Respond professionally.
 """
 
@@ -944,8 +947,6 @@ STRICT INSTRUCTIONS:
     result = await chain.ainvoke({"query": enhanced_query})
 
     response_text = result.content.strip()
-
-    print("Response =", response_text)
 
     # Deterministic knowledge-gap detection
     if response_text == "This information is not available in our records.":
