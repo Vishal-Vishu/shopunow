@@ -296,7 +296,150 @@ async def test_rewrite(request: ChatRequest):
 
     return RewriteTestResponse(
         original_query=request.query,
-        optimized_query=result.get("optimized_query"),
-        needs_rewrite=result.get("needs_rewrite"),
-        awaiting_clarification=result.get("awaiting_clarification")
+        optimized_query=result.get("optimized_query")
+           )
+
+class GuardrailTestResponse(BaseModel):
+    original_query: str
+    out_of_scope: Optional[bool] = None
+    blocked_response: Optional[str] = None    
+
+@app.post("/test-guardrail", response_model=GuardrailTestResponse)
+async def test_guardrail(request: ChatRequest):
+
+    guardrail_graph = build_guardrail_graph()
+
+    result = await guardrail_graph.ainvoke({
+        "query": request.query,
+        "history": [item.model_dump() for item in request.history] if request.history else [],
+        "awaiting_clarification": False,
+        "clarification_context": None
+    })
+
+    return GuardrailTestResponse(
+        original_query=request.query,
+        out_of_scope=result.get("out_of_scope"),
+        blocked_response=result.get("final_response") if result.get("out_of_scope") else None
+    )           
+
+class RetrievedDocument(BaseModel):
+    content: str
+    score: Optional[float] = None
+    source: Optional[str] = None
+    department: Optional[str] = None
+
+
+class RetrievalTestResponse(BaseModel):
+    original_query: str
+    optimized_query: Optional[str]
+    departments: Optional[List[str]]
+    out_of_scope: Optional[bool]
+    retrieved_docs: Optional[List[RetrievedDocument]]
+
+def build_department_finder_graph():
+    graph = StateGraph(ShopState)
+
+    graph.add_node("rewrite", rewrite_node)
+    graph.add_node("guardrail", guardrail_node)
+    graph.add_node("department", department_node)
+
+    graph.set_entry_point("rewrite")
+
+    graph.add_edge("rewrite", "guardrail")
+
+    graph.add_conditional_edges(
+        "guardrail",
+        lambda state: "department" if not state.out_of_scope else END,
+        {
+            "department": "department",
+            END: END
+        }
     )
+
+    graph.add_edge("department", END)
+
+    return graph.compile()
+
+@app.post("/test-department-picker", response_model=RetrievalTestResponse)
+async def test_retrieval(request: ChatRequest):
+
+    retrieval_graph = build_department_finder_graph()
+
+    result = await retrieval_graph.ainvoke({
+        "query": request.query,
+        "history": [item.model_dump() for item in request.history] if request.history else [],
+        "awaiting_clarification": False,
+        "clarification_context": None
+    })
+
+    # Extract retrieved docs from state
+    retrieved_docs = []
+
+    if result.get("retrieved_docs"):
+        for doc in result["retrieved_docs"]:
+            retrieved_docs.append(
+                RetrievedDocument(
+                    content=doc.get("content"),
+                    score=doc.get("score"),
+                    source=doc.get("source"),
+                    department=doc.get("department")
+                )
+            )
+
+    return RetrievalTestResponse(
+        original_query=request.query,
+        optimized_query=result.get("optimized_query"),
+        departments=result.get("departments"),
+        out_of_scope=result.get("out_of_scope"),
+        retrieved_docs=retrieved_docs
+    )    
+
+class DepartmentExecutionTestRequest(BaseModel):
+    query: str
+    departments: List[str]
+    emotion: Optional[str] = "neutral"
+    has_attachment: Optional[bool] = False
+    attachment_text: Optional[str] = ""
+    history: Optional[List[ConversationItem]] = []
+
+class DepartmentExecutionTestResponse(BaseModel):
+    query: str
+    departments: Optional[List[str]]
+    responses: Optional[List[str]]
+    rag_docs_found: Optional[bool]
+    turn_type: Optional[str]
+    execution_node: Optional[str]
+
+def build_department_execution_graph():
+    graph = StateGraph(ShopState)
+
+    graph.add_node("execute_departments", department_execution_node)
+
+    graph.set_entry_point("execute_departments")
+    graph.add_edge("execute_departments", END)
+
+    return graph.compile()    
+
+@app.post("/test-department-execution", response_model=DepartmentExecutionTestResponse)
+async def test_department_execution(request: DepartmentExecutionTestRequest):
+
+    execution_graph = build_department_execution_graph()
+
+    result = await execution_graph.ainvoke({
+        "query": request.query,
+        "optimized_query": request.query,
+        "departments": request.departments,
+        "emotion": request.emotion,
+        "has_attachment": request.has_attachment,
+        "attachment_text": request.attachment_text,
+        "history": [item.model_dump() for item in request.history] if request.history else []
+    })
+
+    return DepartmentExecutionTestResponse(
+        query=request.query,
+        departments=request.departments,
+        responses=result.get("responses"),
+        rag_docs_found=result.get("rag_docs_found"),
+        turn_type=result.get("turn_type"),
+        execution_node=result.get("node_name")
+    )    
