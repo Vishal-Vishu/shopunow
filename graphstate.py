@@ -37,6 +37,7 @@ class ShopState(BaseModel):
     phone: Optional[str] = ""
     history: Optional[List[ConversationItem]] = None
     has_attachment: Optional[bool] = False
+    attachment_text: Optional[str] = None
     departments: Optional[List[str]] = None
     responses: Optional[List[str]] = None
     final_response: Optional[str] = None

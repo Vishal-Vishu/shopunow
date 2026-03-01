@@ -17,6 +17,7 @@ from config import DepartmentRouting, GradeAnswer, CATEGORY_MAP
 from opentelemetry import trace
 
 from graphstate import AffectiveOutput
+from billing_db_tool import extract_order_id, fetch_order_details
 
 
 
@@ -64,7 +65,91 @@ class GuardrailOutput(BaseModel):
 
 class RewriteOutput(BaseModel):
     needs_rewrite: bool
-    rewritten_query: str    
+    rewritten_query: str   
+
+FOLLOWUP_PRONOUNS = [
+    "it", "they", "them", "this", "that",
+    "these", "those", "he", "she"
+]
+
+FOLLOWUP_PATTERNS = [
+    r"^how (do|does|did) (it|they|that|this)",
+    r"^when (will|did) (it|they)",
+    r"^what about (it|this|that|them)",
+    r"^and (what|how|why)",
+    r"^why (is|are|was|were) (it|they)"
+]
+
+def is_followup_query(state: ShopState) -> bool:
+    query = state.query.lower().strip()
+
+    if not state.history:
+        return False
+
+    # 1️⃣ Pronoun detection (strong indicator)
+    words = query.split()
+    if any(word in FOLLOWUP_PRONOUNS for word in words):
+        return True
+
+    # 2️⃣ Pattern detection
+    for pattern in FOLLOWUP_PATTERNS:
+        if re.search(pattern, query):
+            return True
+
+    return False
+
+def conditional_rewrite_node(state: ShopState):
+
+    print("Conditional Rewrite Node")
+
+    if not is_followup_query(state):
+        print("No rewrite needed")
+        return {
+            "optimized_query": state.query,
+            "needs_rewrite": False,
+            "node_name": "conditional_rewrite_skip"
+        }
+
+    print("Follow-up detected. Rewriting...")
+
+    context = build_conversation_context(state)
+
+    llm = ChatOpenAI(
+        model="gpt-4o-mini",
+        temperature=0
+    ).with_structured_output(RewriteOutput)
+
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", """
+Rewrite the CURRENT USER QUERY into a fully self-contained question.
+
+Use conversation history to resolve pronouns.
+
+Do NOT change intent.
+Do NOT invent information.
+If already clear, set needs_rewrite = false.
+
+Return structured output only.
+"""),
+        ("human", """
+Conversation Context:
+{context}
+
+Current Query:
+{query}
+""")
+    ])
+
+    result = (prompt | llm).invoke({
+        "context": context,
+        "query": state.query
+    })
+
+    return {
+        "optimized_query": result.rewritten_query if result.needs_rewrite else state.query,
+        "needs_rewrite": result.needs_rewrite,
+        "node_name": "conditional_rewrite"
+    }     
 
 def guardrail_node(state: ShopState):
 
@@ -81,6 +166,14 @@ def guardrail_node(state: ShopState):
     effective_query = state.optimized_query or state.query
 
     query = normalize(effective_query)
+
+    if re.search(r"ORD-\d+", query, re.IGNORECASE):
+        print("Order ID detected in guardrail — bypassing scope check")
+        return {
+            "out_of_scope": False,
+            "guardrail_reason": None,
+            "node_name": "guardrail"
+        }
 
     # -----------------------------------------
     # 1️⃣ Rule-Based Injection Detection
@@ -165,7 +258,7 @@ Current: where can I check
 Only mark out_of_scope = true if the topic is completely unrelated
 to ShopUNow business operations.
 
-When unsure mark out_of_scope = false                  
+If the query is meaningless, random characters, or nonsensical, mark out_of_scope = true.                
 
 Return structured output only.
 """),
@@ -808,6 +901,12 @@ def department_node(state: ShopState):
 
     query = state.optimized_query or state.query
 
+    if re.search(r"ORD-\d+", query):
+        return {
+            "departments": ["BILLING"],
+            "node_name": "department node"
+        }
+
     # --------------------------------------------------
     # 1️⃣ Taxonomy Scoring
     # --------------------------------------------------
@@ -956,6 +1055,185 @@ STRICT INSTRUCTIONS:
     return response_text
 
 async def department_execution_node(state: ShopState):
+
+    """
+    Hybrid Execution Logic:
+    - If order_id detected in query → SQL lookup
+    - If not found, but attachment exists → try extracting from attachment
+    - If attachment but no order_id → ask clarification
+    - Else → Normal RAG execution
+    """
+
+    print(f"Department Execution started with query == {state.query}")
+
+    context = build_conversation_context(state)
+    vectorstore = get_vector_store()
+
+    latest_query = state.optimized_query or state.query
+
+    # ==========================================================
+    # 🔥 TRANSACTIONAL DETECTION (QUERY OR ATTACHMENT)
+    # ==========================================================
+
+    # 1️⃣ Try extracting order_id from query
+    order_id = extract_order_id(latest_query)
+
+    # 2️⃣ If not found in query, try extracting from attachment text
+    if not order_id and getattr(state, "has_attachment", False):
+        attachment_text = getattr(state, "attachment_text", "")
+        order_id = extract_order_id(attachment_text)
+
+    # ==========================================================
+    # 🧾 IF ORDER ID FOUND → RUN SQL
+    # ==========================================================
+
+    if order_id:
+
+        print(f"Order ID detected: {order_id} — triggering SQL lookup")
+
+        order_data = fetch_order_details(order_id)
+
+        if not order_data:
+            return {
+                "responses": [f"I could not find any record for order {order_id}."],
+                "rag_docs_found": False,
+                "turn_type": "knowledge_gap",
+                "node_name": "SQL Order Lookup"
+            }
+
+        order = order_data["order"]
+        items = order_data["items"]
+
+        # Extract delivery date safely (adjust index as per schema)
+        expected_delivery_date = None
+        if len(order) >= 10:
+            expected_delivery_date = order[9]
+
+        # --------------------------------------------------
+        # Intelligent Answer Based on Query Intent
+        # --------------------------------------------------
+
+        query_lower = latest_query.lower()
+
+        delivery_keywords = [
+            "delivery", "deliver", "arrive", "arrival",
+            "ship", "shipping", "reach", "get"
+        ]
+
+        is_delivery_query = any(
+            keyword in query_lower for keyword in delivery_keywords
+        )
+
+        if is_delivery_query:
+            response_text = (
+                f"The expected delivery date for order {order_id} "
+                f"is {expected_delivery_date}."
+                if expected_delivery_date
+                else f"I couldn't find the delivery date for order {order_id}."
+            )
+        else:
+            # Default summary
+            order_summary = f"""
+Order ID: {order[0]}
+Order Date: {order[2]}
+Payment Mode: {order[3]}
+Subtotal: ₹{order[4]}
+Tax: ₹{order[5]}
+Discount: ₹{order[6]}
+Total Paid: ₹{order[7]}
+"""
+
+            item_details = "\n".join([
+                f"- {item[0]} | Qty: {item[2]} | Unit Price: ₹{item[3]}"
+                for item in items
+            ])
+
+            response_text = f"""
+Here are the details for order {order_id}:
+
+{order_summary}
+
+Items Purchased:
+{item_details}
+"""
+
+        # Emotion-aware tone
+        if state.emotion in ["anger", "frustration"]:
+            response_text = "I understand your concern. " + response_text
+        elif state.emotion == "confusion":
+            response_text = "Let me clarify that for you. " + response_text
+
+        return {
+            "responses": [response_text.strip()],
+            "rag_docs_found": True,
+            "turn_type": "success",
+            "node_name": "SQL Order Handler"
+        }
+
+    # ==========================================================
+    # 📎 ATTACHMENT PRESENT BUT NO ORDER ID FOUND
+    # ==========================================================
+
+    if getattr(state, "has_attachment", False):
+
+        return {
+            "responses": [
+                "I couldn't detect an Order ID in your uploaded receipt. "
+                "Could you please confirm the Order ID?"
+            ],
+            "rag_docs_found": False,
+            "turn_type": "clarification_needed",
+            "node_name": "SQL Clarification"
+        }
+
+    # ==========================================================
+    # 🧠 NORMAL RAG FLOW
+    # ==========================================================
+
+    print("Proceeding with normal RAG execution")
+
+    tasks = [
+        execute_single_department(
+            dept,
+            latest_query,
+            context,
+            vectorstore,
+            bm25_retriever,
+            state
+        )
+        for dept in (state.departments or [])
+    ]
+
+    if not tasks:
+        return {
+            "responses": ["I'm not sure which department should handle this request."],
+            "rag_docs_found": False,
+            "turn_type": "knowledge_gap",
+            "node_name": "Department Execution"
+        }
+
+    results = await asyncio.gather(*tasks)
+
+    responses = [res for res in results if res is not None]
+
+    if not responses:
+        return {
+            "responses": [
+                "I'm sorry, I couldn't find any specific information regarding that in our ShopUNow records."
+            ],
+            "rag_docs_found": False,
+            "turn_type": "knowledge_gap",
+            "node_name": "Department Execution"
+        }
+
+    return {
+        "responses": responses,
+        "rag_docs_found": True,
+        "turn_type": "success",
+        "node_name": "Department Execution"
+    }
+
+async def department_execution_node_bkp(state: ShopState):
     """
     Executes department logic.
     - If attachment present + order_id detected + BILLING department → SQL lookup
@@ -963,8 +1241,6 @@ async def department_execution_node(state: ShopState):
     """
 
     print(f"Department Execution started with query == {state.query}")
-
-    from billing_db_tool import extract_order_id, fetch_order_details
 
     context = build_conversation_context(state)
     vectorstore = get_vector_store()
@@ -977,11 +1253,7 @@ async def department_execution_node(state: ShopState):
 
     order_id = extract_order_id(latest_query)
 
-    if (
-        getattr(state, "has_attachment", False)
-        and order_id
-        and "BILLING" in (state.departments or [])
-    ):
+    if order_id:
         print(f"SQL lookup triggered for {order_id}")
 
         order_data = fetch_order_details(order_id)
@@ -1319,39 +1591,71 @@ Assistant Response:
         "evaluation": evaluation
     }
 
+from graphstate import ConversationItem
+
 def answer_grader_node(state: ShopState):
     print("--- ANSWER GRADER NODE ---")
     
-    # Initialize LLM with structured output
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0).with_structured_output(GradeAnswer)
+    # ---------------------------------------------------------
+    # 1️⃣ Initialize LLM with structured output
+    # ---------------------------------------------------------
+    llm = ChatOpenAI(
+        model="gpt-4o-mini",
+        temperature=0
+    ).with_structured_output(GradeAnswer)
     
-    # Prepare context for the judge: The Answer vs. the Source Documents
-    # (Assuming state.responses contains the raw department output)
-    current_answer = state.final_response or "\n\n".join(state.responses)
-    
+    # ---------------------------------------------------------
+    # 2️⃣ Get Final Answer (Safe Handling)
+    # ---------------------------------------------------------
+    current_answer = state.final_response or "\n\n".join(state.responses or [])
+
+    # Use RESOLVED query for grading consistency
+    resolved_query = state.optimized_query or state.query
+
     system_prompt = """
     You are a Quality Assurance Judge for ShopUNow. 
-    Compare the provided ANSWER against the USER QUERY and the retrieved CONTEXT.
-    
-    - Faithfulness: Ensure the answer does NOT include info outside the context.
+    Compare the provided ANSWER against the USER QUERY.
+
+    - Faithfulness: Ensure the answer does NOT include unsupported info.
     - Relevance: Ensure the answer directly solves the user's specific problem.
     """
-    
+
     result = llm.invoke([
         ("system", system_prompt),
-        ("human", f"QUERY: {state.query}\n\nANSWER: {current_answer}")
+        ("human", f"QUERY: {resolved_query}\n\nANSWER: {current_answer}")
     ])
 
-    result_dict = result.model_dump() 
-    
-    print(f"Scores -> Faith: {result.faithfulness_score}, Rel: {result.relevance_score}")
+    result_dict = result.model_dump()
+
+    print(
+        f"Scores -> Faith: {result_dict['faithfulness_score']}, "
+        f"Rel: {result_dict['relevance_score']}"
+    )
+
+    # ---------------------------------------------------------
+    # 3️⃣ Persist Conversation History (CRITICAL FIX)
+    # ---------------------------------------------------------
+
+    history = state.history or []
+
+    # Prevent duplicate append during retries
+    if not history or history[-1].query != resolved_query:
+        history.append(
+            ConversationItem(
+                query=resolved_query,
+                response=current_answer
+            )
+        )
+
+    # ---------------------------------------------------------
+    # 4️⃣ Return Updated State
+    # ---------------------------------------------------------
     
     return {
-    #"is_satisfactory": result_dict["is_satisfactory"],
-    #"improvement_feedback": result_dict["improvement_feedback"],
-    "faithfulness_score": result_dict["faithfulness_score"],
-    "relevance_score": result_dict["relevance_score"],
-    "node_name": "answer_grader"
+        "faithfulness_score": result_dict["faithfulness_score"],
+        "relevance_score": result_dict["relevance_score"],
+        "history": history,
+        "node_name": "answer_grader"
     }
 
 import logging

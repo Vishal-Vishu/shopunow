@@ -243,6 +243,7 @@ Please consider both while responding.
                     "awaiting_clarification": st.session_state.awaiting_clarification,
                     "clarification_context": st.session_state.clarification_context,
                     "has_attachment": bool(uploaded_file),
+                    "attachment_text": extracted_text if uploaded_file else None
                 }
             )
         )
@@ -286,11 +287,12 @@ Please consider both while responding.
     # --------------------------------------
     # Normal Response Logging
     # --------------------------------------
+    resolved_query = result.get("optimized_query") or user_query
 
     append_message(
         phone=phone,
         session_id=st.session_state.session_id,
-        query=result.get("query", user_query),
+        query=resolved_query,
         response=final_response,
         turn_type=result.get("turn_type", "success"),
         department=",".join(result.get("departments", [])) if result.get("departments") else None,

@@ -11,7 +11,8 @@ from graphnodes import (
     department_execution_node,
     response_enrichment_node,
     escalation_node,
-    answer_grader_node
+    answer_grader_node,
+    conditional_rewrite_node
 )
 
 from config import setup_phoenix
@@ -37,12 +38,14 @@ def build_graph():
     graph.add_node("response_enrichment", response_enrichment_node)
     graph.add_node("escalation", escalation_node)
     graph.add_node("answer_grader", answer_grader_node)
+    graph.add_node("conditional_rewrite", conditional_rewrite_node)
 
     # ==========================================================
     # ENTRY POINT
     # ==========================================================
 
-    graph.set_entry_point("guardrail")
+    graph.set_entry_point("conditional_rewrite")
+    graph.add_edge("conditional_rewrite", "guardrail")
 
     # ==========================================================
     # GUARDRAIL ROUTING

@@ -14,7 +14,7 @@ def fetch_order_details(order_id: str):
 
     # Get order
     cursor.execute("""
-        SELECT order_id, customer_id, order_date, payment_mode, subtotal, tax, discount, total
+        SELECT order_id, customer_id, order_date, payment_mode, subtotal, tax, discount, total, shipped_date , expected_delivery_date 
         FROM orders
         WHERE order_id = ?
     """, (order_id,))
