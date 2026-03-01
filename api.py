@@ -420,7 +420,7 @@ def build_department_execution_graph():
 
     return graph.compile()    
 
-@app.post("/test-department-execution", response_model=DepartmentExecutionTestResponse)
+@app.post("/test-rag-retrieval", response_model=DepartmentExecutionTestResponse)
 async def test_department_execution(request: DepartmentExecutionTestRequest):
 
     execution_graph = build_department_execution_graph()
