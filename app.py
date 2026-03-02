@@ -35,20 +35,11 @@ st.set_page_config(
 
 st.title("🛍️ ShopUNow Agentic AI Assistant")
 
-# ==========================================================
-# Cleanup Expired Sessions
-# ==========================================================
-
 cleanup_expired_sessions(timeout_minutes=30)
-
-# ==========================================================
-# Initialize Conversation Table (DB Memory)
-# ==========================================================
-
 initialize_conversation_table()
 
 # ==========================================================
-# Initialize Graph (Cached)
+# Initialize Graph
 # ==========================================================
 
 @st.cache_resource
@@ -68,28 +59,20 @@ if not phone:
     st.stop()
 
 # ==========================================================
-# SESSION MANAGEMENT
+# Session Management
 # ==========================================================
 
 if "session_id" not in st.session_state:
-    session_id = create_user_session(phone)
-    st.session_state.session_id = session_id
+    st.session_state.session_id = create_user_session(phone)
     st.session_state.session_phone = phone
     st.session_state.session_start_time = time.time()
 
-# If phone changes
-if (
-    "session_phone" in st.session_state
-    and st.session_state.session_phone != phone
-):
+if st.session_state.session_phone != phone:
     close_user_session(st.session_state.session_id)
-
-    new_session_id = create_user_session(phone)
-    st.session_state.session_id = new_session_id
+    st.session_state.session_id = create_user_session(phone)
     st.session_state.session_phone = phone
     st.session_state.session_start_time = time.time()
 
-# Session timeout
 if is_session_expired(st.session_state.session_id, timeout_minutes=30):
     close_user_session(st.session_state.session_id)
     st.warning("⏳ Session expired due to inactivity. Please re-login.")
@@ -97,7 +80,7 @@ if is_session_expired(st.session_state.session_id, timeout_minutes=30):
     st.stop()
 
 # ==========================================================
-# Load Conversation History (Session-Based)
+# Load Conversation History
 # ==========================================================
 
 if (
@@ -105,13 +88,12 @@ if (
     or st.session_state.loaded_session != st.session_state.session_id
 ):
     st.session_state.loaded_session = st.session_state.session_id
-    st.session_state.chat_history = fetch_phone_history(
-        phone,
-        limit=50
-    )
+    st.session_state.chat_history = fetch_phone_history(phone, limit=50)
     st.session_state.escalation_active = False
     st.session_state.awaiting_clarification = False
     st.session_state.clarification_context = None
+    st.session_state.attachment_text = None
+    st.session_state.last_uploaded_filename = None
 
 # ==========================================================
 # Display Conversation
@@ -179,13 +161,33 @@ if st.session_state.escalation_active:
     st.stop()
 
 # ==========================================================
-# File Upload
+# File Upload (BUG-FREE VERSION)
 # ==========================================================
 
 uploaded_file = st.file_uploader(
     "📎 Upload bill / receipt / image / document (optional)",
-    type=["png", "jpg", "jpeg", "pdf", "docx"]
+    type=["png", "jpg", "jpeg", "pdf", "docx"],
+    key="file_uploader"
 )
+
+# Detect NEW upload only
+if uploaded_file is not None:
+    if uploaded_file.name != st.session_state.last_uploaded_filename:
+        with st.spinner("Processing uploaded file..."):
+            extracted_text = process_uploaded_file(uploaded_file)
+
+        st.session_state.attachment_text = extracted_text
+        st.session_state.last_uploaded_filename = uploaded_file.name
+
+        with st.expander("📄 Extracted File Content"):
+            st.text(extracted_text)
+
+# Optional Clear Button
+if st.session_state.attachment_text:
+    if st.button("Clear Uploaded File"):
+        st.session_state.attachment_text = None
+        st.session_state.last_uploaded_filename = None
+        st.rerun()
 
 # ==========================================================
 # Chat Input
@@ -199,30 +201,21 @@ if user_query:
 
     combined_query = user_query
 
-    # --------------------------------------
-    # Multimodal Processing
-    # --------------------------------------
-
-    if uploaded_file:
-        with st.spinner("Processing uploaded file..."):
-            extracted_text = process_uploaded_file(uploaded_file)
-
-        with st.expander("📄 Extracted File Content"):
-            st.text(extracted_text)
-
+    # Attach document content if available
+    if st.session_state.attachment_text:
         combined_query = f"""
 User Query:
 {user_query}
 
 Attached Document Content:
-{extracted_text}
+{st.session_state.attachment_text}
 
 Please consider both while responding.
 """
 
-    # --------------------------------------
+    # ======================================================
     # Graph Invocation
-    # --------------------------------------
+    # ======================================================
 
     with st.spinner("Thinking..."):
         result = asyncio.run(
@@ -242,8 +235,8 @@ Please consider both while responding.
                     "escalation_required": False,
                     "awaiting_clarification": st.session_state.awaiting_clarification,
                     "clarification_context": st.session_state.clarification_context,
-                    "has_attachment": bool(uploaded_file),
-                    "attachment_text": extracted_text if uploaded_file else None
+                    "has_attachment": st.session_state.attachment_text is not None,
+                    "attachment_text": st.session_state.attachment_text
                 }
             )
         )
@@ -259,9 +252,9 @@ Please consider both while responding.
         "clarification_context"
     )
 
-    # --------------------------------------
-    # Escalation Trigger
-    # --------------------------------------
+    # ======================================================
+    # Escalation Handling
+    # ======================================================
 
     if escalation_required:
 
@@ -284,9 +277,10 @@ Please consider both while responding.
         st.session_state.escalation_active = True
         st.rerun()
 
-    # --------------------------------------
+    # ======================================================
     # Normal Response Logging
-    # --------------------------------------
+    # ======================================================
+
     resolved_query = result.get("optimized_query") or user_query
 
     append_message(
