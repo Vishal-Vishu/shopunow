@@ -81,9 +81,6 @@ def retrieve_docs(
                     reverse=True
                 )
 
-                print("Vector store Results \n")
-                print(vector_results)
-
                 best_score = vector_results[0][1]
                 vspan.set_attribute("best_vector_score", best_score)
 
